@@ -63,6 +63,9 @@ private:
 			*contamination_asym_bins_in_reco_variable_;
 	TH2F* response_asym_bins_, *response_without_fakes_asym_bins_;
 
+	// Weights histograms
+	TH1F* puGen_, *puOffline_, *btagOffline_, *sfOffline_;
+
 	//functions
 	float get_gen_variable(const edm::Event& iEvent) const;
 	float get_reco_variable(const edm::Event& iEvent) const;

@@ -59,7 +59,11 @@ UnfoldingAnalyser::UnfoldingAnalyser(const edm::ParameterSet& iConfig) :
 		contamination_asym_bins_in_gen_variable_(), //
 		contamination_asym_bins_in_reco_variable_(), //
 		response_asym_bins_(), //
-		response_without_fakes_asym_bins_() {
+		response_without_fakes_asym_bins_(),
+		puGen_(),
+		puOffline_(),
+		btagOffline_(),
+		sfOffline_() {
 
 }
 
@@ -159,6 +163,23 @@ void UnfoldingAnalyser::beginJob() {
 					> ("response_without_fakes_AsymBins", TString(
 							"response;RECO(" + variable_under_analysis_ + ");GEN(" + variable_under_analysis_ + ")"), n_asym_bins, METBinEdges, n_asym_bins, METBinEdges);
 
+	puGen_ =
+				fs->make < TH1F
+						> ("puGen", TString("PU weights;GEN(" + variable_under_analysis_ + ");# Events"), 20, 0, 2);
+
+	puOffline_ =
+				fs->make < TH1F
+						> ("puOffline", TString("PU weights;RECO(" + variable_under_analysis_ + ");# Events"), 20, 0, 2);
+
+	btagOffline_ =
+				fs->make < TH1F
+						> ("btagOffline", TString("PU weights;RECO(" + variable_under_analysis_ + ");# Events"), 20, 0, 2);
+
+	sfOffline_ =
+				fs->make < TH1F
+						> ("sfOffline", TString("PU weights;RECO(" + variable_under_analysis_ + ");# Events"), 20, 0, 2);
+
+
 	//cout << "Well, you could use 'scram b' as a compiler on your machine within an IDE" << endl;
  	truth_->Sumw2();
  	measured_->Sumw2();
@@ -175,6 +196,11 @@ void UnfoldingAnalyser::beginJob() {
 	contamination_asym_bins_in_reco_variable_->Sumw2();
 	response_asym_bins_->Sumw2();
 	response_without_fakes_asym_bins_->Sumw2();
+
+	puGen_->Sumw2();
+	puOffline_->Sumw2();
+	btagOffline_->Sumw2();
+	sfOffline_->Sumw2();
 
 	//cout << "However, you need to be able to install CMSSW on your machine." << endl;
 }
@@ -215,6 +241,8 @@ void UnfoldingAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup&
 			//PU weight only (no btag-weight) as no b-tagging is applied
 			truth_->Fill(gen_variable, puWeight);
 			truth_asym_bins_->Fill(gen_variable, puWeight);
+
+			puGen_->Fill( puWeight );
 		}
 
 		double electronCorrection = get_electron_correction(iEvent, centre_of_mass_energy_);
@@ -228,6 +256,10 @@ void UnfoldingAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup&
 			measured_asym_bins_->Fill(reco_variable, weight);
 			response_->Fill(reco_variable, gen_variable, weight);
 			response_asym_bins_->Fill(reco_variable, gen_variable, weight);
+
+			puOffline_->Fill( puWeight );
+			btagOffline_->Fill( btagWeight );
+			sfOffline_->Fill( electronCorrection );
 
 			if (is_semileptonic_electron) {
 				response_without_fakes_->Fill(reco_variable, gen_variable, weight);
@@ -251,6 +283,8 @@ void UnfoldingAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup&
 			//PU weight only (no btag-weight) as no b-tagging is applied
 			truth_->Fill(gen_variable, puWeight);
 			truth_asym_bins_->Fill(gen_variable, puWeight);
+
+			puGen_->Fill( puWeight );
 		}
 
 		double muonCorrection = get_muon_correction(iEvent, centre_of_mass_energy_);
@@ -264,6 +298,10 @@ void UnfoldingAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup&
 			measured_asym_bins_->Fill(reco_variable, weight);
 			response_->Fill(reco_variable, gen_variable, weight);
 			response_asym_bins_->Fill(reco_variable, gen_variable, weight);
+
+			puOffline_->Fill( puWeight );
+			btagOffline_->Fill( btagWeight );
+			sfOffline_->Fill( muonCorrection );
 
 			if (is_semileptonic_muon) {
 				response_without_fakes_->Fill(reco_variable, gen_variable, weight);
