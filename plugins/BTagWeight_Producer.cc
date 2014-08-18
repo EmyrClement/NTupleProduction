@@ -30,7 +30,7 @@ void BTagWeight_Producer::produce(edm::Event& iEvent, const edm::EventSetup& iSe
 		//get jets and numberOfBtags
 		edm::Handle < pat::JetCollection > jets;
 		iEvent.getByLabel(jetInput_, jets);
-		bjetWeights = BjetWeights(*jets, numberOfBjets, BJetSystematic_, LightJetSystematic_, MCSampleTag_);
+		bjetWeights = BjetWeights(*jets, numberOfBjets, MCSampleTag_);
 
 		btagWeight = 0;
 		//calculate inclusive weights
