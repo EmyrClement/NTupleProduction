@@ -33,8 +33,9 @@ void BTagWeight_Producer::produce(edm::Event& iEvent, const edm::EventSetup& iSe
 		bjetWeights = BjetWeights(*jets, numberOfBjets, MCSampleTag_);
 
 		btagWeight = 0;
-		//calculate inclusive weights
-		for (unsigned int btag = targetBtagMultiplicity_; btag <= numberOfBjets; ++btag) {
+		//calculate weight
+		// Hangover from previous method.  All weights are zero except the one corresponding to the actual number of btags.
+		for (unsigned int btag = 0; btag <= numberOfBjets; ++btag) {
 			btagWeight += bjetWeights.at(btag);
 		}
 	}
