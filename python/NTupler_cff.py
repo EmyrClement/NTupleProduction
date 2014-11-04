@@ -65,8 +65,6 @@ def setup_ntupler(process, cms, options):
         treeName = cms.string('tree'),
         outputCommands=cms.untracked.vstring(
            'drop *',
-           #beamspot
-            'keep *_rootTupleBeamSpot_*_*',
             #EventContent
             'keep *_rootTupleEvent_*_*',
             #CaloJets
@@ -102,8 +100,6 @@ def setup_ntupler(process, cms, options):
             'keep *_rootTupleTrigger*_*_*',
             #vertices (DA)
             'keep *_rootTupleVertex_*_*',
-            #tracks
-            'keep *_rootTupleTracks_*_*',
             #gen information
             'keep *_rootTupleGenEventInfo_*_*',
             'keep *_rootTupleGenParticles_*_*',
@@ -115,8 +111,6 @@ def setup_ntupler(process, cms, options):
     )
     
     process.rootNTuples = cms.Sequence((
-        #beamspot
-        process.rootTupleBeamSpot + 
         #vertices
         process.rootTupleVertex + 
         #jets
