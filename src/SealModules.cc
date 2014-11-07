@@ -1,7 +1,6 @@
 #include "FWCore/PluginManager/interface/ModuleDef.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "BristolAnalysis/NTupleTools/interface/RootTupleMakerV2_Tree.h"
-#include "BristolAnalysis/NTupleTools/interface/BristolNTuple_CaloJets.h"
 #include "BristolAnalysis/NTupleTools/interface/BristolNTuple_GenJets.h"
 #include "BristolAnalysis/NTupleTools/interface/BristolNTuple_GenMET.h"
 #include "BristolAnalysis/NTupleTools/interface/BristolNTuple_RecoMET.h"
@@ -21,7 +20,6 @@
 #include "BristolAnalysis/NTupleTools/interface/BristolNTuple_GlobalEventVars.h"
 
 DEFINE_FWK_MODULE(RootTupleMakerV2_Tree);
-DEFINE_FWK_MODULE(BristolNTuple_CaloJets);
 DEFINE_FWK_MODULE(BristolNTuple_GenJets);
 DEFINE_FWK_MODULE(BristolNTuple_GenMET);
 DEFINE_FWK_MODULE(BristolNTuple_RecoMET);

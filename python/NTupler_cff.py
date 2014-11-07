@@ -9,9 +9,6 @@ def setup_ntupler(process, cms, options):
     #vertices
     process.rootTupleVertex.InputTag = cms.InputTag('goodOfflinePrimaryVertices')
     process.rootTupleVertex.Prefix = cms.string('goodOfflinePrimaryVertices.')
-    #calo jets
-    process.rootTupleCaloJets.InputTag = cms.InputTag('goodPatJets')
-    process.rootTupleCaloJets.Prefix = cms.string('goodPatJets.')
     #PF2PAT jets
     process.rootTuplePF2PATJets.InputTag = cms.InputTag('goodPatJetsPFlow')
     process.rootTuplePF2PATJets.Prefix = cms.string('goodPatJetsPFlow.')
@@ -67,8 +64,6 @@ def setup_ntupler(process, cms, options):
            'drop *',
             #EventContent
             'keep *_rootTupleEvent_*_*',
-            #CaloJets
-            'keep *_rootTupleCaloJets_*_*',
             #PF jets
             'keep *_rootTuplePF2PATJets_*_*',
             #electrons
@@ -114,7 +109,6 @@ def setup_ntupler(process, cms, options):
         #vertices
         process.rootTupleVertex + 
         #jets
-        process.rootTupleCaloJets + 
         process.rootTuplePF2PATJets + 
         #electrons
         process.rootTupleElectrons + 
@@ -217,7 +211,6 @@ def setup_ntupler(process, cms, options):
         process.rootNTuples.remove(process.eventWeightPU)
         
     if not options.writeFat:#write only PF particles
-        process.rootNTuples.remove(process.rootTupleCaloJets)
         process.rootNTuples.remove(process.rootTupleCaloMET)
         process.rootNTuples.remove(process.rootTupleElectrons)
         process.rootNTuples.remove(process.nTupleMuons)
