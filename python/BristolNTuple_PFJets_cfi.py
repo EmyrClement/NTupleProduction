@@ -6,12 +6,8 @@ rootTuplePFJets = cms.EDProducer("BristolNTuple_PFJets",
     Suffix = cms.string(''),
     MaxSize = cms.uint32(99),
     JECUncertainty = cms.string('AK5PF'),
-    ReadJECuncertainty = cms.bool(True),
+    ReadJECuncertainty = cms.bool(False),
     DoVertexAssociation = cms.bool(True),
-    VertexInputTag = cms.InputTag('offlinePrimaryVertices'),
+    VertexInputTag = cms.InputTag('offlineSlimmedPrimaryVertices'),
     isRealData = cms.bool(False)
 )
-
-
-rootTuplePF2PATJets = rootTuplePFJets.clone(InputTag = cms.InputTag('goodPatJetsPFlow'),
-    Prefix = cms.string('goodPatJetsPFlow.'))

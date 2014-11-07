@@ -11,6 +11,5 @@ rootTupleElectrons = cms.EDProducer("BristolNTuple_Electrons",
     storePFIsolation = cms.bool(False),
     debugRelease = cms.bool(False),
     BeamSpotInputTag = cms.InputTag('offlineBeamSpot'),
-    ConversionsInputTag = cms.InputTag('allConversions'),
-    LikelihoodInputTag = cms.InputTag('egammaIDLikelihood'),
+    ConversionsInputTag = cms.InputTag('reducedEgamma','reducedConversions'),
 )
