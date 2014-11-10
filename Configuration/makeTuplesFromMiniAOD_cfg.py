@@ -26,6 +26,8 @@ process.rootTupleTree = cms.EDAnalyzer("RootTupleMakerV2_Tree",
         treeName = cms.string('tree'),
         outputCommands=cms.untracked.vstring(
            'drop *',
+           # Event
+           'keep *_rootTupleEvent_*_*',
            # Vertices
            'keep *_rootTupleVertex_*_*',
            # muons
@@ -40,6 +42,9 @@ process.rootTupleTree = cms.EDAnalyzer("RootTupleMakerV2_Tree",
     )
 
 process.rootNTuples = cms.Sequence(
+        # Event
+        process.rootTupleEvent +
+
         # Vertices
         process.rootTupleVertex + 
 
