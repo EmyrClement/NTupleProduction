@@ -34,6 +34,8 @@ process.rootTupleTree = cms.EDAnalyzer("RootTupleMakerV2_Tree",
            'keep *_rootTupleElectrons_*_*',
            # jets
            'keep *_rootTuplePFJets_*_*',
+           # MET
+           'keep *_rootTupleMET_*_*'
         )
     )
 
@@ -49,6 +51,9 @@ process.rootNTuples = cms.Sequence(
 
         # Jets
         process.rootTuplePFJets +
+
+        # MET
+        process.rootTupleMET +
 
         # Make ntuple
         process.rootTupleTree)
