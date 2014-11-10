@@ -1,10 +1,10 @@
 import FWCore.ParameterSet.Config as cms
 
-rootTupleElectrons = cms.EDProducer("BristolNTuple_Electrons",
+nTupleElectrons = cms.EDProducer("BristolNTuple_Electrons",
     TracksInputTag = cms.InputTag('generalTracks'),
     DCSInputTag = cms.InputTag('scalersRawToDigi'),
-    InputTag = cms.InputTag('cleanPatElectrons'),
-    Prefix = cms.string('Electron.'),
+    InputTag = cms.InputTag('slimmedElectrons'),
+    Prefix = cms.string('Electrons.'),
     Suffix = cms.string(''),
     MaxSize = cms.uint32(99),
     VertexInputTag = cms.InputTag('offlineSlimmedPrimaryVertices'),

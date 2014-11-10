@@ -13,67 +13,11 @@ process.source = cms.Source("PoolSource",
 ## Maximum Number of Events
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100) )
 
-
-
-process.load('BristolAnalysis.NTupleTools.Ntuple_cff')
-
-process.nTupleMuons.InputTag = cms.InputTag('slimmedMuons')
-process.nTupleMuons.Prefix = cms.string('Muons.')
-
-process.rootTupleElectrons.InputTag = cms.InputTag('slimmedElectrons')
-process.rootTupleElectrons.Prefix = cms.string('Electrons.')
-
-process.rootTuplePFJets.InputTag = cms.InputTag('slimmedJets')
-process.rootTuplePFJets.Prefix = cms.string('Jets.')
-
-process.rootTupleTree = cms.EDAnalyzer("RootTupleMakerV2_Tree",
-        treeName = cms.string('tree'),
-        outputCommands=cms.untracked.vstring(
-           'drop *',
-           # Event
-           'keep *_rootTupleEvent_*_*',
-           # Trigger
-           # 'keep *_rootTupleTrigger_*_*',
-           # Vertices
-           'keep *_rootTupleVertex_*_*',
-           # muons
-           'keep *_nTupleMuons_*_*',
-           # electrons
-           'keep *_rootTupleElectrons_*_*',
-           # jets
-           'keep *_rootTuplePFJets_*_*',
-           # MET
-           'keep *_rootTupleMET_*_*'
-        )
-    )
-
-process.rootNTuples = cms.Sequence(
-        # Event
-        process.rootTupleEvent +
-
-        # Trigger
-        # process.rootTupleTrigger +
-
-        # Vertices
-        process.rootTupleVertex + 
-
-        # muons
-        process.nTupleMuons +
-
-        # Electron
-        process.rootTupleElectrons +
-
-        # Jets
-        process.rootTuplePFJets +
-
-        # MET
-        process.rootTupleMET +
-
-        # Make ntuple
-        process.rootTupleTree)
+from BristolAnalysis.NTupleTools.NTupler_cff import *
+setup_ntupler(process, cms )
 
 process.makingNTuples = cms.Path(
-						process.rootNTuples
+						process.nTuples
                       )
 
 process.TFileService = cms.Service("TFileService",

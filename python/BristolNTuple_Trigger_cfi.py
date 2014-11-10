@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-rootTupleTrigger = cms.EDProducer("BristolNTuple_Trigger",
+nTupleTrigger = cms.EDProducer("BristolNTuple_Trigger",
     L1InputTag  = cms.InputTag('gtDigis'),
     HLTInputTag = cms.InputTag('TriggerResults','','HLT'),
     Prefix=cms.string('Trigger.'),

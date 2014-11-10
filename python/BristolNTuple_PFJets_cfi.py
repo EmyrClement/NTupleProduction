@@ -1,8 +1,8 @@
 import FWCore.ParameterSet.Config as cms
 
-rootTuplePFJets = cms.EDProducer("BristolNTuple_PFJets",
-    InputTag = cms.InputTag('cleanPatJetsAK5PF'),
-    Prefix = cms.string('PFJet.'),
+nTuplePFJets = cms.EDProducer("BristolNTuple_PFJets",
+    InputTag = cms.InputTag('slimmedJets'),
+    Prefix = cms.string('Jets.'),
     Suffix = cms.string(''),
     MaxSize = cms.uint32(99),
     JECUncertainty = cms.string('AK5PF'),
