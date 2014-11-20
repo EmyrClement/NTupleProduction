@@ -15,6 +15,8 @@ def setup_ntupler(process, cms):
                'keep *_nTupleEvent_*_*',
                # Trigger
                'keep *_nTupleTrigger*_*_*',
+               # Trigger Objects
+               'keep *_nTupleTriggerObjects*_*_*',
                # Vertices
                'keep *_nTupleVertex_*_*',
                # muons
@@ -34,6 +36,9 @@ def setup_ntupler(process, cms):
 
         # Trigger
         process.triggerSequence +
+
+        # Trigger Objects
+        # process.triggerObjectSequence +
 
         # Vertices
         process.nTupleVertex + 

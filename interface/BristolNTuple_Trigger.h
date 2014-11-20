@@ -5,7 +5,6 @@
 #include "FWCore/Framework/interface/EDProducer.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Utilities/interface/InputTag.h"
-#include "HLTrigger/HLTcore/interface/HLTConfigProvider.h"
 
 class BristolNTuple_Trigger : public edm::EDProducer {
  public:
@@ -16,9 +15,8 @@ class BristolNTuple_Trigger : public edm::EDProducer {
   void beginRun( edm::Run &, const edm::EventSetup & );
   //unsigned int findTrigger(const std::string& triggerWildCard);
 
-  const edm::InputTag   hltInputTag_;
+  const edm::InputTag   hltInputTag_, hltObjectsInputTag_;
   const std::string pathOfInterest_;
-  HLTConfigProvider hltConfig_;
   const std::string     prefix_,suffix_;
 };
 

@@ -18,6 +18,7 @@ interestingPaths = [
 
 nTupleTrigger = cms.EDProducer("BristolNTuple_Trigger",
     HLTInputTag = cms.InputTag('TriggerResults','','HLT'),
+    HLTObjectsInputTag = cms.InputTag('selectedPatTrigger'),
     Prefix=cms.string('HLTIsoMu20eta2p1.'),
     Suffix=cms.string(''),
 
