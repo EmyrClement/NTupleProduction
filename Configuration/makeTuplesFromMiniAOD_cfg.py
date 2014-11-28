@@ -7,7 +7,7 @@ process.GlobalTag.globaltag = cms.string('PLS170_V7AN2::All')
 
 ## Source
 process.source = cms.Source("PoolSource",
-    fileNames = cms.untracked.vstring('file:/home/ec6821/CMSSW_7_0_9_patch3/src/004C6DA7-FB03-E411-96BD-0025905A497A.root')
+    fileNames = cms.untracked.vstring('file:/home/ec6821/CMSSW_7_2_2/src/TTPhys14.root')
 )
 
 # Load the selection filters and the selection analyzers
@@ -23,7 +23,7 @@ process.load( 'BristolAnalysis.NTupleTools.electronSelection_cff')
 # process.load( 'TopQuarkAnalysis.TopKinFitter.TtSemiLepKinFitProducer_Muons_cfi' )
 
 ## Maximum Number of Events
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(10000) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
 from BristolAnalysis.NTupleTools.NTupler_cff import *
 setup_ntupler(process, cms )
