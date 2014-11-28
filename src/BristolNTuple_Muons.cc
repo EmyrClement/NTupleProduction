@@ -420,7 +420,7 @@ void BristolNTuple_Muons::produce(edm::Event& iEvent, const edm::EventSetup& iSe
 			trkD0Error->push_back(it->track()->d0Error());
 			trkDz->push_back(it->track()->dz());
 			trkDzError->push_back(it->track()->dzError());
-			trackValidFractionOfHits->push_back(validFraction(it->track()));
+			trackValidFractionOfHits->push_back(it->track()->validFraction());
 
 			//associated global track
 			if ( !( it->globalTrack().isNull() ) ) {

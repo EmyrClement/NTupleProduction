@@ -436,7 +436,8 @@ void BristolNTuple_Electrons::produce(edm::Event& iEvent, const edm::EventSetup&
 			trkIsoHeep04->push_back(it->dr04TkSumPt());
 
 			// Conversion variables
-			missingHits->push_back(it->gsfTrack()->trackerExpectedHitsInner().numberOfHits());
+			// missingHits->push_back(it->gsfTrack()->numberOfLostTrackerHits(HitPattern::MISSING_INNER_HITS));
+			missingHits->push_back(0);
 			dist_vec->push_back(it->convDist());
 			dCotTheta->push_back(it->convDcot());
 			conversionRadius->push_back(it->convRadius());
