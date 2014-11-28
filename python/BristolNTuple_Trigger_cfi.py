@@ -1,21 +1,5 @@
 import FWCore.ParameterSet.Config as cms
 
-interestingPaths = [
-    'HLT_IsoMu20_eta2p1_v',
-    'HLT_Ele24_eta2p1_WP85_v',
-
-    # 7e33 (25ns)
-    'HLT_IsoMu20_eta2p1_v',
-    'HLT_Ele28_eta2p1_WP85_Gsf_v',
-
-    # 1.4e34 (25ns)
-    'HLT_IsoMu24_eta2p1_v',
-    'HLT_Ele27_WP80_v', # Currently in MC
-    'HLT_Ele32_eta2p1_WP85_Gsf_v',
-    'HLT_Ele32_eta2p1_WP85_Gsf_TriCentralPFJet60_50_35_v',
-    'HLT_Ele32_eta2p1_WP85_Gsf_TriCentralPFJet40_v',
-]
-
 nTupleTrigger = cms.EDProducer("BristolNTuple_Trigger",
     HLTInputTag = cms.InputTag('TriggerResults','','HLT'),
     HLTObjectsInputTag = cms.InputTag('selectedPatTrigger'),
@@ -26,7 +10,19 @@ nTupleTrigger = cms.EDProducer("BristolNTuple_Trigger",
 
 )
 
-nTupleTriggerIsoMu20eta2p1 = nTupleTrigger.clone( Prefix='HLTIsoMu20eta2p1.', PathOfInterest='HLT_IsoMu20_eta2p1_v')
-nTupleTriggerEle27WP80 = nTupleTrigger.clone( Prefix='HLTEle27WP80.', PathOfInterest='HLT_Ele27_WP80_v')
+# Top Phys14 Triggers
+nTupleTriggerEle32eta2p1WP85Gsf = nTupleTrigger.clone( Prefix='HLTEle32eta2p1WP85Gsf.', PathOfInterest='HLT_Ele32_eta2p1_WP85_Gsf_v')
+nTupleTriggerEle32eta2p1WP85GsfCentralPFJet30BTagCSV = nTupleTrigger.clone( Prefix='HLTEle32eta2p1WP85GsfCentralPFJet30BTagCSV.', PathOfInterest='HLT_Ele32_eta2p1_WP85_Gsf_CentralPFJet30_BTagCSV_v')
+nTupleTriggerEle32eta2p1WP85GsfTriCentralPFJet40 = nTupleTrigger.clone( Prefix='HLTEle32eta2p1WP85GsfTriCentralPFJet40.', PathOfInterest='HLT_Ele32_eta2p1_WP85_Gsf_TriCentralPFJet40_v')
+nTupleTriggerEle32eta2p1WP85GsfTriCentralPFJet605035 = nTupleTrigger.clone( Prefix='HLTEle32eta2p1WP85GsfTriCentralPFJet605035.', PathOfInterest='HLT_Ele32_eta2p1_WP85_Gsf_TriCentralPFJet60_50_35_v')
 
-triggerSequence = cms.Sequence( nTupleTriggerIsoMu20eta2p1 + nTupleTriggerEle27WP80 )
+nTupleTriggerIsoMu24eta2p1IterTrk02 = nTupleTrigger.clone( Prefix='HLTIsoMu24eta2p1IterTrk02.', PathOfInterest='IsoMu24_eta2p1_IterTrk02')
+
+
+triggerSequence = cms.Sequence(
+    nTupleTriggerEle32eta2p1WP85Gsf *
+    nTupleTriggerEle32eta2p1WP85GsfCentralPFJet30BTagCSV *
+    nTupleTriggerEle32eta2p1WP85GsfTriCentralPFJet40 *
+    nTupleTriggerEle32eta2p1WP85GsfTriCentralPFJet605035 *
+    nTupleTriggerIsoMu24eta2p1IterTrk02 
+)

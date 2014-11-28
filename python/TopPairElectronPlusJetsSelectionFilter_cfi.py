@@ -10,10 +10,14 @@ topPairEPlusJetsSelection = cms.EDFilter('TopPairElectronPlusJetsSelectionFilter
     # Lepton cuts
     minSignalElectronPt=cms.double(30.),
     maxSignalElectronEta=cms.double(2.5),
+    signalElectronIDCriteria=cms.string('cutBasedElectronID-CSA14-PU20bx25-V0-standalone-tight'),
+    minSignalElectronID=cms.double(0),
     minLooseMuonPt=cms.double(10.),
     maxLooseMuonEta=cms.double(2.5),
     minLooseElectronPt=cms.double(20.),
     maxLooseElectronEta=cms.double(2.5),
+    looseElectronIDCriteria=cms.string('cutBasedElectronID-CSA14-PU20bx25-V0-standalone-veto'),
+    minLooseElectronID=cms.double(0),
 
     #jet cuts
     min1JetPt=cms.double(30.),
@@ -25,8 +29,9 @@ topPairEPlusJetsSelection = cms.EDFilter('TopPairElectronPlusJetsSelectionFilter
     cleaningDeltaR=cms.double(0.3),
 
     # B Jet Selection
-    bJetDiscriminator=cms.string('combinedSecondaryVertexBJetTags'),
-    minBJetDiscriminator=cms.double(0.679),
+    # Working points taken from https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideBTagging#Preliminary_working_or_operating
+    bJetDiscriminator=cms.string('combinedInclusiveSecondaryVertexV2BJetTags'),
+    minBJetDiscriminator=cms.double(0.814),
     
     prefix=cms.untracked.string('TopPairElectronPlusJetsSelection.'),
     MCSampleTag = cms.string('Summer12'),#Fall11 or Summer12 or Summer11Leg
