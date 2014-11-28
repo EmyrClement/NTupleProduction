@@ -57,6 +57,12 @@ options.register ('dropTriggerSelection',
                   VarParsing.varType.bool,
                   "Remove trigger selection for trigger studies")
 
+options.register ('jetSelectionInTaggingMode',
+                  False,
+                  VarParsing.multiplicity.singleton,
+                  VarParsing.varType.bool,
+                  "Apply jet requirements (last 6 selection steps) in tagging mode")
+
 options.register ('bSelectionInTaggingMode',
                   False,
                   VarParsing.multiplicity.singleton,

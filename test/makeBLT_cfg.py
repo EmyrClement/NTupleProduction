@@ -82,6 +82,14 @@ if options.bSelectionInTaggingMode:
     process.topPairEPlusJetsSelectionApply.bSelectionInTaggingMode = cms.bool( True )
     process.topPairMuPlusJetsSelectionApply.bSelectionInTaggingMode = cms.bool( True )
 
+if options.jetSelectionInTaggingMode:
+    #apply to filters in tagging mode (for monitoring)
+    process.topPairEPlusJetsSelection.jetSelectionInTaggingMode = cms.bool( True )
+    process.topPairMuPlusJetsSelection.jetSelectionInTaggingMode = cms.bool( True )
+    #apply to actual BLT filters
+    process.topPairEPlusJetsSelectionApply.jetSelectionInTaggingMode = cms.bool( True )
+    process.topPairMuPlusJetsSelectionApply.jetSelectionInTaggingMode = cms.bool( True )
+
 electronselectionPrefix = 'TopPairElectronPlusJetsSelection.'
 muonselectionPrefix = 'TopPairMuonPlusJetsSelection.'
 process.topPairEPlusJetsSelection.prefix = cms.untracked.string( electronselectionPrefix )

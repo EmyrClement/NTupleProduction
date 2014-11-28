@@ -54,6 +54,7 @@ TopPairMuonPlusJetsSelectionFilter::TopPairMuonPlusJetsSelectionFilter(const edm
 		debug_(iConfig.getUntrackedParameter<bool>("debug")), //
 		taggingMode_(iConfig.getParameter<bool>("taggingMode")), //
 		bSelectionInTaggingMode_(iConfig.getParameter<bool>("bSelectionInTaggingMode")), //
+		jetSelectionInTaggingMode_(iConfig.getParameter<bool>("jetSelectionInTaggingMode")), //
 		nonIsolatedMuonSelection_(iConfig.getParameter<bool>("nonIsolatedMuonSelection")), //
 		passes_(), //
 		runNumber_(0), //
@@ -124,6 +125,7 @@ void TopPairMuonPlusJetsSelectionFilter::fillDescriptions(edm::ConfigurationDesc
 	desc.addUntracked<bool>("debug", false);
 	desc.add<bool>("taggingMode", false);
 	desc.add<bool>("bSelectionInTaggingMode", false);
+	desc.add<bool>("jetSelectionInTaggingMode", false);
 	desc.add<bool>("nonIsolatedMuonSelection", false);
 	descriptions.add("applyTopPairMuonPlusJetsSelection", desc);
 }
@@ -139,6 +141,7 @@ bool TopPairMuonPlusJetsSelectionFilter::filter(edm::Event& iEvent, const edm::E
 	std::auto_ptr < pat::JetCollection > jetoutput(new pat::JetCollection());
 
 	bool passesSelection(true);
+	bool passesSelectionExceptJets(true);
 	bool passesSelectionExceptBtagging(true);
 
 	for (unsigned int step = 0; step < TTbarMuPlusJetsReferenceSelection::NUMBER_OF_SELECTION_STEPS; ++step) {
@@ -163,6 +166,9 @@ bool TopPairMuonPlusJetsSelectionFilter::filter(edm::Event& iEvent, const edm::E
 		passesSelection = passesSelection && passesStep;
 		passes_.at(step) = passesStep;
 
+		if ( step < TTbarMuPlusJetsReferenceSelection::AtLeastOneGoodJet )
+			passesSelectionExceptJets = passesSelectionExceptJets && passesStep;
+
 		if ( step < TTbarMuPlusJetsReferenceSelection::AtLeastOneBtag )
 			passesSelectionExceptBtagging = passesSelectionExceptBtagging && passesStep;
 
@@ -185,10 +191,12 @@ bool TopPairMuonPlusJetsSelectionFilter::filter(edm::Event& iEvent, const edm::E
 
 	iEvent.put(std::auto_ptr<unsigned int>(new unsigned int(signalMuonIndex_)),prefix_ + "signalMuonIndex");
 
-	if ( !bSelectionInTaggingMode_ )
-		return taggingMode_ || passesSelection;
-	else
+	if ( jetSelectionInTaggingMode_ )
+		return taggingMode_ || passesSelectionExceptJets;
+	else if ( bSelectionInTaggingMode_ )
 		return taggingMode_ || passesSelectionExceptBtagging;
+	else
+		return taggingMode_ || passesSelection;
 }
 
 void TopPairMuonPlusJetsSelectionFilter::setupEventContent(edm::Event& iEvent) {

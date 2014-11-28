@@ -105,7 +105,7 @@ private:
 
 	std::string prefix_, MCSampleTag_;
 
-	bool debug_, taggingMode_, bSelectionInTaggingMode_;
+	bool debug_, taggingMode_, bSelectionInTaggingMode_, jetSelectionInTaggingMode_;
 
 	// Control region selections
 	bool nonIsolatedMuonSelection_;

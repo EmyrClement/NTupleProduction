@@ -54,6 +54,7 @@ TopPairElectronPlusJetsSelectionFilter::TopPairElectronPlusJetsSelectionFilter(c
 		debug_(iConfig.getUntrackedParameter<bool>("debug")), //
 		taggingMode_(iConfig.getParameter<bool>("taggingMode")), //
 		bSelectionInTaggingMode_(iConfig.getParameter<bool>("bSelectionInTaggingMode")), //
+		jetSelectionInTaggingMode_(iConfig.getParameter<bool>("jetSelectionInTaggingMode")), //
 		nonIsolatedElectronSelection_(iConfig.getParameter<bool>("nonIsolatedElectronSelection")), //
 		invertedConversionSelection_(iConfig.getParameter<bool>("invertedConversionSelection")), //
 		passes_(), //
@@ -123,6 +124,7 @@ void TopPairElectronPlusJetsSelectionFilter::fillDescriptions(edm::Configuration
 	desc.addUntracked<bool>("debug", false);
 	desc.add<bool>("taggingMode", false);
 	desc.add<bool>("bSelectionInTaggingMode", false);
+	desc.add<bool>("jetSelectionInTaggingMode", false);
 	desc.add<bool>("nonIsolatedElectronSelection", false);
 	desc.add<bool>("invertedConversionSelection", false);
 	descriptions.add("applyTopPairElectronPlusJetsSelection", desc);
@@ -139,6 +141,7 @@ bool TopPairElectronPlusJetsSelectionFilter::filter(edm::Event& iEvent, const ed
 	std::auto_ptr < pat::JetCollection > jetoutput(new pat::JetCollection());
 
 	bool passesSelection(true);
+	bool passesSelectionExceptJets(true);
 	bool passesSelectionExceptBtagging(true);
 
 	for (unsigned int step = 0; step < TTbarEPlusJetsReferenceSelection::NUMBER_OF_SELECTION_STEPS; ++step) {
@@ -157,6 +160,9 @@ bool TopPairElectronPlusJetsSelectionFilter::filter(edm::Event& iEvent, const ed
 
 		passesSelection = passesSelection && passesStep;
 		passes_.at(step) = passesStep;
+
+		if ( step < TTbarEPlusJetsReferenceSelection::AtLeastOneGoodJet )
+			passesSelectionExceptJets = passesSelectionExceptJets && passesStep;
 
 		if ( step < TTbarEPlusJetsReferenceSelection::AtLeastOneBtag )
 			passesSelectionExceptBtagging = passesSelectionExceptBtagging && passesStep;
@@ -181,10 +187,13 @@ bool TopPairElectronPlusJetsSelectionFilter::filter(edm::Event& iEvent, const ed
 
 	iEvent.put(std::auto_ptr<unsigned int>(new unsigned int(signalElectronIndex_)),prefix_ + "signalElectronIndex");
 
-	if ( !bSelectionInTaggingMode_ )
-		return taggingMode_ || passesSelection;
-	else
+	if ( jetSelectionInTaggingMode_ )
+		return taggingMode_ || passesSelectionExceptJets;
+	else if ( bSelectionInTaggingMode_ )
 		return taggingMode_ || passesSelectionExceptBtagging;
+	else
+		return taggingMode_ || passesSelection;
+
 }
 
 void TopPairElectronPlusJetsSelectionFilter::setupEventContent(edm::Event& iEvent) {
