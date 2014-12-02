@@ -7,21 +7,29 @@ process.GlobalTag.globaltag = cms.string('PLS170_V7AN2::All')
 
 ## Source
 process.source = cms.Source("PoolSource",
-    fileNames = cms.untracked.vstring('file:/home/ec6821/CMSSW_7_2_2/src/TTPhys14.root')
+    fileNames = cms.untracked.vstring('file:/home/ec6821/CMSSW_7_2_2/src/06843FC5-8370-E411-9B8C-0025905A60AA.root')
 )
 
+process.load("FWCore.MessageLogger.MessageLogger_cfi")
+process.MessageLogger.cerr.threshold = 'INFO'
+process.MessageLogger.cerr.FwkReport.reportEvery = 5000
+
+# Get options from command line
+from FWCore.ParameterSet.VarParsing import VarParsing
+options = VarParsing ('python')
+from BristolAnalysis.NTupleTools.NTupleOptions_cff import *
+getOptions( options )
+
 # Load the selection filters and the selection analyzers
-# process.load( 'BristolAnalysis.NTupleTools.SelectionAnalyser_cfi' )
-# process.load( 'BristolAnalysis.NTupleTools.TopPairMuonPlusJetsSelectionFilter_cfi' )
 process.load( 'BristolAnalysis.NTupleTools.muonSelection_cff')
 process.load( 'BristolAnalysis.NTupleTools.electronSelection_cff')
 
-# process.load( 'TopQuarkAnalysis.TopKinFitter.TtSemiLepKinFitProducer_Electrons_cfi' )
-# process.kinFitTtSemiLepEvent.jets = cms.InputTag('slimmedJets')
-# process.kinFitTtSemiLepEvent.leps = cms.InputTag('slimmedElectrons')
-# process.kinFitTtSemiLepEvent.mets = cms.InputTag('slimmedMETs')
-# process.load( 'TopQuarkAnalysis.TopKinFitter.TtSemiLepKinFitProducer_Muons_cfi' )
-
+if options.tagAndProbe:
+  process.topPairEPlusJetsSelection.tagAndProbeStudies = cms.bool( True )
+  process.topPairEPlusJetsSelectionTagging.tagAndProbeStudies = cms.bool( True )
+  process.topPairEPlusJetsSelection.jetSelectionInTaggingMode = cms.bool( True )
+  process.topPairEPlusJetsSelectionTagging.jetSelectionInTaggingMode = cms.bool( True )
+  
 ## Maximum Number of Events
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
@@ -55,7 +63,6 @@ process.TFileService = cms.Service("TFileService",
 # process.out = cms.OutputModule("PoolOutputModule",
 #                 fileName = cms.untracked.string("testOutput.root")
 #         )
-
 # process.outpath = cms.EndPath(process.out)
 
 
