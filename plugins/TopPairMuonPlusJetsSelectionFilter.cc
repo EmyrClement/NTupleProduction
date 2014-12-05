@@ -59,6 +59,7 @@ TopPairMuonPlusJetsSelectionFilter::TopPairMuonPlusJetsSelectionFilter(const edm
 		isRealData_(false), //
 		hasSignalMuon_(false), //
 		hasGoodPV_(false), //
+		cleanedJetIndex_(),
 		jets_(), //,
 		cleanedJets_(), //
 		cleanedBJets_(), //
@@ -77,7 +78,9 @@ TopPairMuonPlusJetsSelectionFilter::TopPairMuonPlusJetsSelectionFilter(const edm
 	}
 	produces<bool>(prefix_ + "FullSelection");
 	produces<unsigned int>(prefix_ + "NumberOfBtags");
-	produces < pat::JetCollection > (prefix_ + "cleanedJets");
+	produces<unsigned int>(prefix_ + "NumberOfJets");
+	produces<std::vector<unsigned int> >(prefix_ + "cleanedJetIndex");
+	// produces < pat::JetCollection > (prefix_ + "cleanedJets");
 	produces<unsigned int>(prefix_ + "signalMuonIndex");
 }
 
@@ -127,12 +130,19 @@ bool TopPairMuonPlusJetsSelectionFilter::filter(edm::Event& iEvent, const edm::E
 	// Including selecting a signal muon, loose leptons, jets and bjets
 	setupEventContent(iEvent);
 
+	// Store number of cleaned jets in event
+	unsigned int numberOfJets(cleanedJets_.size());
+	iEvent.put(std::auto_ptr<unsigned int>(new unsigned int(numberOfJets)), prefix_ + "NumberOfJets");
+
+	// Store indices of cleaned jets in event
+	iEvent.put(std::auto_ptr<std::vector<unsigned int> >(new std::vector<unsigned int>(cleanedJetIndex_)), prefix_ + "cleanedJetIndex");
+
 	// Store number of b tags in event
 	unsigned int numberOfBtags(cleanedBJets_.size());
 	iEvent.put(std::auto_ptr<unsigned int>(new unsigned int(numberOfBtags)), prefix_ + "NumberOfBtags");
 
 	// Prepare output of cleaned jets
-	std::auto_ptr < pat::JetCollection > jetoutput(new pat::JetCollection());
+	// std::auto_ptr < pat::JetCollection > jetoutput(new pat::JetCollection());
 
 
 	// Loop through each selection step in order and check if event satisfies each criterion
@@ -177,9 +187,9 @@ bool TopPairMuonPlusJetsSelectionFilter::filter(edm::Event& iEvent, const edm::E
 	iEvent.put(std::auto_ptr<bool>(new bool(passesSelection)), prefix_ + "FullSelection");
 
 	// Put cleaned jets in event
-	for (unsigned int index = 0; index < cleanedJets_.size(); ++index)
-		jetoutput->push_back(cleanedJets_.at(index));
-	iEvent.put(jetoutput, prefix_ + "cleanedJets");
+	// for (unsigned int index = 0; index < cleanedJets_.size(); ++index)
+		// jetoutput->push_back(cleanedJets_.at(index));
+	// iEvent.put(jetoutput, prefix_ + "cleanedJets");
 
 	// Store index of signal muon
 	iEvent.put(std::auto_ptr<unsigned int>(new unsigned int(signalMuonIndex_)),prefix_ + "signalMuonIndex");
@@ -345,6 +355,7 @@ bool TopPairMuonPlusJetsSelectionFilter::isGoodMuon(const pat::Muon& muon) const
 
 void TopPairMuonPlusJetsSelectionFilter::cleanedJets() {
 	cleanedJets_.clear();
+	cleanedJetIndex_.clear();
 
 	// Loop over jets
 	for (unsigned index = 0; index < jets_.size(); ++index) {
@@ -371,8 +382,10 @@ void TopPairMuonPlusJetsSelectionFilter::cleanedJets() {
 			}
 		}
 		// Keep jet if it doesn't overlap with the signal muon
-		if (!overlaps)
+		if (!overlaps){
 			cleanedJets_.push_back(jet);
+			cleanedJetIndex_.push_back(index);
+		}
 	}
 }
 
