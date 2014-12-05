@@ -7,7 +7,8 @@ process.GlobalTag.globaltag = cms.string('PLS170_V7AN2::All')
 
 ## Source
 process.source = cms.Source("PoolSource",
-    fileNames = cms.untracked.vstring('file:/home/ec6821/CMSSW_7_2_2/src/06843FC5-8370-E411-9B8C-0025905A60AA.root')
+    fileNames = cms.untracked.vstring('file:/home/ec6821/CMSSW_7_2_2/src/TTPhys14.root')
+    # fileNames = cms.untracked.vstring('file:/home/ec6821/CMSSW_7_2_2/src/WJetsPhys14.root')
 )
 
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
