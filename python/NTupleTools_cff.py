@@ -195,7 +195,7 @@ elif options.CMSSW == "53X" and options.centreOfMassEnergy == 7:
     GLOBALTAG_MC = 'START53_LV6A1::All' #2011 7TeV 53X legaco MC: https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideFrontierConditions#7_TeV_MC_Legacy_reprocessing_in
     FILETAG = '53X'
     TEST_DATA_FILE = 'file:///storage/TopQuarkGroup/test/ElectronHad_Run2011A-12Oct2013-v1_AOD.root' #test file for 2011 7TeV 53X RunA Oct2013 re-reco
-    TEST_MC_FILE = 'file:///storage/TopQuarkGroup/test/TTJets_MSDecays_central_TuneZ2_7TeV-madgraph-tauola_Summer11LegDR-PU_S13_START53_LV6-v1_AODSIM.root' #test file for 2011 7TeV 53X TTJets Monte Carlo
+    TEST_MC_FILE = 'file:///storage/ec6821/NTupleProd/CMSSW_5_3_20/src/TTJets_MSDecays_central_TuneZ2_7TeV-madgraph-tauola_Summer11LegDR-PU_S13_START53_LV6-v1_AODSIM.root' #test file for 2011 7TeV 53X TTJets Monte Carlo
 elif options.CMSSW == '44X':
     GLOBALTAG_DATA = 'GR_R_44_V15::All'
     GLOBALTAG_MC = 'START44_V13::All'

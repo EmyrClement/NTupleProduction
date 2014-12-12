@@ -86,6 +86,7 @@ process.eventFiltersIntaggingMode = cms.Sequence( process.MCFiltersInTaggingMode
 #            Unfolding Config
 ##########################################################################################
 process.load( 'BristolAnalysis.NTupleTools.BTagWeight_Producer_cfi' )
+process.load( 'BristolAnalysis.NTupleTools.MuonWeight_Producer_cfi' )
 process.load( 'BristolAnalysis.NTupleTools.UnfoldingProducer_cfi' )
 process.eventWeightBtagEPlusJets = process.eventWeightBtag.clone( 
             numberOfTagsInput = cms.InputTag( "topPairEPlusJetsSelection", electronselectionPrefix + 'NumberOfBtags', 'PAT' ),
@@ -97,6 +98,7 @@ process.eventWeightBtagMuPlusJets = process.eventWeightBtagEPlusJets.clone(
             numberOfTagsInput = cms.InputTag( "topPairMuPlusJetsSelection", muonselectionPrefix + 'NumberOfBtags', 'PAT' )  ,
             jetInput = cms.InputTag( "topPairMuPlusJetsSelection", muonselectionPrefix + 'cleanedJets', 'PAT' ),
                                                               )
+
 
 electron_unfolding_analysers = [
     process.unfoldingProducerElectron,
@@ -162,18 +164,19 @@ process.commonSequence = cms.Sequence(
 if not options.printEventContent:
     process.commonSequence.remove( process.printEventContent )
     
-process.ePlusJetsUnfoldingAnalysis = cms.Path( 
-          process.commonSequence *
-          process.eventWeightBtagEPlusJets * 
-          process.topPairEPlusJetsSelectionAnalyser *
-          process.unfoldingProducerElectron *
-          process.rootTupleTreeEPlusJets
-		  )
+# process.ePlusJetsUnfoldingAnalysis = cms.Path( 
+#           process.commonSequence *
+#           process.eventWeightBtagEPlusJets * 
+#           process.topPairEPlusJetsSelectionAnalyser *
+#           process.unfoldingProducerElectron *
+#           process.rootTupleTreeEPlusJets
+# 		  )
 
 process.muPlusJetsUnfoldingAnalysis = cms.Path( 
           process.commonSequence *
           process.eventWeightBtagMuPlusJets * 
           process.topPairMuPlusJetsSelectionAnalyser *
+          process.eventWeightMuons *
           process.unfoldingProducerMuon *
           process.rootTupleTreeMuPlusJets
           )
