@@ -7,7 +7,8 @@ process.GlobalTag.globaltag = cms.string('PLS170_V7AN2::All')
 
 ## Source
 process.source = cms.Source("PoolSource",
-    fileNames = cms.untracked.vstring('file:/home/ec6821/CMSSW_7_2_2/src/TTPhys14.root')
+    # fileNames = cms.untracked.vstring('file:/storage/ec6821/NTupleProd/CMSSW_7_2_3/src/TT_pythia8_PHYS14.root')
+    fileNames = cms.untracked.vstring('file:/storage/ec6821/NTupleProd/CMSSW_7_2_3/src/TT_madgraph_PHYS14.root')
     # fileNames = cms.untracked.vstring('file:/home/ec6821/CMSSW_7_2_2/src/WJetsPhys14.root')
 )
 
@@ -41,7 +42,7 @@ if options.tagAndProbe:
 
  
 ## Maximum Number of Events
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(5000) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
 from BristolAnalysis.NTupleTools.NTupler_cff import *
 setup_ntupler(process, cms )
@@ -79,9 +80,10 @@ if options.selectionInTaggingMode:
   process.makingNTuplesElectrons.remove( process.topPairEPlusJetsSelection )
 
 if not options.isTTbarMC:
-  process.nTupleGenEventInfo.isTTbarMC = cms.bool( True )
   process.makingNTuplesMuons.remove( process.ttGenEvent )
   process.makingNTuplesElectrons.remove( process.ttGenEvent )
+else:
+  process.nTupleGenEventInfo.isTTbarMC = cms.bool( True )
 
 process.TFileService = cms.Service("TFileService",
                            fileName=cms.string('ntuple.root')
