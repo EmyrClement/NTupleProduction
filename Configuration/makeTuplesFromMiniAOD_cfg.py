@@ -33,6 +33,7 @@ setupTTGenEvent( process, cms )
 # Load the selection filters and the selection analyzers
 process.load( 'BristolAnalysis.NTupleTools.muonSelection_cff')
 process.load( 'BristolAnalysis.NTupleTools.electronSelection_cff')
+process.load( 'BristolAnalysis.NTupleTools.SelectionCriteriaAnalyzer_cfi')
 
 if options.tagAndProbe:
   process.topPairEPlusJetsSelection.tagAndProbeStudies = cms.bool( True )
@@ -47,33 +48,48 @@ process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 from BristolAnalysis.NTupleTools.NTupler_cff import *
 setup_ntupler(process, cms )
 
-process.makingNTuplesMuons = cms.Path(
-            			# Run selection analyzer sequence
-            			# Applies selection in tagging mode and makes cut flow plots
-			            process.muonSelectionAnalyzerSequence *
-			            # Actually apply the selection
-            			process.topPairMuPlusJetsSelection *
+# process.makingNTuplesMuons = cms.Path(
+#             			# Run selection analyzer sequence
+#             			# Applies selection in tagging mode and makes cut flow plots
+# 			            process.muonSelectionAnalyzerSequence *
+# 			            # Actually apply the selection
+#             			process.topPairMuPlusJetsSelection *
 
-                  # Produce TTGen event and store info
-                  process.ttGenEvent *
+#                   # Produce TTGen event and store info
+#                   process.ttGenEvent *
             		  
-                  # Produce ntuples from events that survive the selection
-      						process.muonNTuples
-                      )
+#                   # Produce ntuples from events that survive the selection
+#       						process.muonNTuples
+#                       )
 
-process.makingNTuplesElectrons = cms.Path(
-                  # Run selection analyzer sequence
-                  # Applies selection in tagging mode and makes cut flow plots
-                  process.electronSelectionAnalyzerSequence *
-                  # Actually apply the selection
-                  process.topPairEPlusJetsSelection *
+# process.makingNTuplesElectrons = cms.Path(
+#                   # Run selection analyzer sequence
+#                   # Applies selection in tagging mode and makes cut flow plots
+#                   process.electronSelectionAnalyzerSequence *
+#                   # Actually apply the selection
+#                   process.topPairEPlusJetsSelection *
 
-                  # Produce TTGen event and store info 
-                  process.ttGenEvent *
+#                   # Produce TTGen event and store info 
+#                   process.ttGenEvent *
 
-                  # Produce ntuples from events that survive the selection
-                  process.electronNTuples
-                  )
+#                   # Produce ntuples from events that survive the selection
+#                   process.electronNTuples
+#                   )
+
+process.makingNTuples = cms.Path(
+  process.electronSelectionAnalyzerSequence *
+  process.muonSelectionAnalyzerSequence *  
+  process.selectionCriteriaAnalyzer *
+  process.ttGenEvent *
+  process.nTuples *
+  process.nTupleTree
+  )
+
+process.nTupleTree.outputCommands.append( 'keep uint*_topPairMuPlusJetsSelectionTagging_*_*' )
+process.nTupleTree.outputCommands.append( 'keep uint*_topPairEPlusJetsSelectionTagging_*_*' )
+process.nTupleTree.outputCommands.append( 'keep bool_topPairMuPlusJetsSelectionTagging_*_*' )
+process.nTupleTree.outputCommands.append( 'keep bool_topPairEPlusJetsSelectionTagging_*_*' )
+
 
 if options.selectionInTaggingMode:
   process.makingNTuplesMuons.remove( process.topPairMuPlusJetsSelection )
