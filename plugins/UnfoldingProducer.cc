@@ -19,8 +19,7 @@ UnfoldingProducer::UnfoldingProducer(const edm::ParameterSet& iConfig) :
 		pu_weight_input_(iConfig.getParameter < edm::InputTag > ("pu_weight_input")), //
 		b_tag_weight_input(iConfig.getParameter < edm::InputTag > ("b_tag_weight_input")), //
 		pdfWeightsInputTag_(iConfig.getParameter < edm::InputTag > ("PDFWeightsInputTag")), //
-		muonWeightsInputTag_(iConfig.getParameter < edm::InputTag > ("muonWeightsInputTag")), //
-		electronWeightsInputTag_(iConfig.getParameter < edm::InputTag > ("electronWeightsInputTag")), //		
+		leptonWeightsInputTag_(iConfig.getParameter < edm::InputTag > ("leptonWeightsInputTag")), //
 		gen_part_input_(iConfig.getParameter < edm::InputTag > ("gen_part_input")), //
 		gen_MET_input_(iConfig.getParameter < edm::InputTag > ("gen_MET_input")), //
 		reco_MET_input_(iConfig.getParameter < edm::InputTag > ("reco_MET_Input")), //	
@@ -73,8 +72,7 @@ void UnfoldingProducer::fillDescriptions(edm::ConfigurationDescriptions & descri
 	desc.add < InputTag > ("pu_weight_input");
 	desc.add < InputTag > ("b_tag_weight_input");
 	desc.add < InputTag > ("PDFWeightsInputTag");
-	desc.add < InputTag > ("muonWeightsInputTag");
-	desc.add < InputTag > ("electronWeightsInputTag");
+	desc.add < InputTag > ("leptonWeightsInputTag");
 	desc.add < InputTag > ("gen_part_input");
 	desc.add < InputTag > ("gen_MET_input");
 	desc.add < InputTag > ("reco_MET_Input");
@@ -141,21 +139,20 @@ void UnfoldingProducer::produce( edm::Event& iEvent, const edm::EventSetup&) {
 	iEvent.put(leptonPt, prefix+"leptonPt"+suffix);
 
 	edm::Handle<std::vector<double> > leptonWeightHandle;
+	iEvent.getByLabel(leptonWeightsInputTag_, leptonWeightHandle);
 	edm::Handle<unsigned int> leptonIndexHandle;
 	if (do_electron_channel_) {
-		iEvent.getByLabel(muonWeightsInputTag_, leptonWeightHandle);
 		iEvent.getByLabel(muonIndex_input_, leptonIndexHandle);
 	}
 	else {
-		iEvent.getByLabel(electronWeightsInputTag_, leptonWeightHandle);
 		iEvent.getByLabel(electronIndex_input_, leptonIndexHandle);
 	}
 
 	std::auto_ptr<double> leptonWeight(new double(0));
-	if ( *leptonIndexHandle <= leptonWeightHandle->size() ) {
+
+	if ( *leptonIndexHandle < leptonWeightHandle->size() ) {
 		*leptonWeight = leptonWeightHandle->at(*leptonIndexHandle);
 	}
-
 	iEvent.put(leptonWeight,prefix+"leptonWeight"+suffix);
 
 	// Store jet pt, eta and parton

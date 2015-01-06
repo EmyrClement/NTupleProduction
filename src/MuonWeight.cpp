@@ -31,6 +31,7 @@ double MuonWeight::weight( const Muon& muon, TH2F* muonIdIsoScaleFactorsHistogra
 
 	double triggerSF = getTriggerScaleFactor( muon, muonTriggerScaleFactorsHistogram, MCSampleTag );
 	double idSF = getIDScaleFactor( muon, muonIdIsoScaleFactorsHistogram, MCSampleTag );
+
 	return triggerSF * idSF;
 }
 
@@ -38,6 +39,11 @@ double MuonWeight::getTriggerScaleFactor( const pat::Muon& muon, TH3F* muonTrigg
 	if (MCSampleTag == "Summer11Leg") {
 		unsigned int triggerBinNumberMuon = muonTriggerScaleFactorsHistogram->FindBin( 1, muon.eta(), muon.pt() );
 		unsigned int triggerBinNumberAntiMuon = muonTriggerScaleFactorsHistogram->FindBin( -1, muon.eta(), muon.pt() );
+
+		if ( muon.pt() >= 2000 ) {
+			triggerBinNumberMuon = muonTriggerScaleFactorsHistogram->FindBin( 1, muon.eta(), 1500 );
+			triggerBinNumberAntiMuon = muonTriggerScaleFactorsHistogram->FindBin( -1, muon.eta(), 1500 );
+		}
 
 		float triggerScaleFactorMuon = muonTriggerScaleFactorsHistogram->GetBinContent( triggerBinNumberMuon );
 		float triggerScaleFactorAntiMuon = muonTriggerScaleFactorsHistogram->GetBinContent( triggerBinNumberAntiMuon );
@@ -263,6 +269,11 @@ double MuonWeight::getTriggerScaleFactor( const pat::Muon& muon, TH3F* muonTrigg
 double MuonWeight::getIDScaleFactor( const pat::Muon& muon, TH2F* muonIdIsoScaleFactorsHistogram, std::string MCSampleTag ) const {
 	if ( MCSampleTag == "Summer11Leg"){
 		unsigned int isoBinNumberMuon = muonIdIsoScaleFactorsHistogram->FindBin( muon.eta(), muon.pt() );
+
+		if ( muon.pt() >= 2000 ) {
+			isoBinNumberMuon = muonIdIsoScaleFactorsHistogram->FindBin( muon.eta(), 1500 );
+		}
+
 		return muonIdIsoScaleFactorsHistogram->GetBinContent(isoBinNumberMuon);
 	}
 		else return 1;

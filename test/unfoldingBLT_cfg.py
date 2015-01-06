@@ -87,6 +87,7 @@ process.eventFiltersIntaggingMode = cms.Sequence( process.MCFiltersInTaggingMode
 ##########################################################################################
 process.load( 'BristolAnalysis.NTupleTools.BTagWeight_Producer_cfi' )
 process.load( 'BristolAnalysis.NTupleTools.MuonWeight_Producer_cfi' )
+process.load( 'BristolAnalysis.NTupleTools.ElectronWeight_Producer_cfi' )
 process.load( 'BristolAnalysis.NTupleTools.UnfoldingProducer_cfi' )
 process.eventWeightBtagEPlusJets = process.eventWeightBtag.clone( 
             numberOfTagsInput = cms.InputTag( "topPairEPlusJetsSelection", electronselectionPrefix + 'NumberOfBtags', 'PAT' ),
@@ -99,6 +100,12 @@ process.eventWeightBtagMuPlusJets = process.eventWeightBtagEPlusJets.clone(
             jetInput = cms.InputTag( "topPairMuPlusJetsSelection", muonselectionPrefix + 'cleanedJets', 'PAT' ),
                                                               )
 
+if options.CMSSW == '53X' and options.centreOfMassEnergy == 8:
+  process.eventWeightElectrons.MCSampleTag = cms.string( 'Summer12' )
+  process.eventWeightMuons.MCSampleTag = cms.string( 'Summer12' )
+elif options.CMSSW == '53X' and options.centreOfMassEnergy == 7:
+  process.eventWeightElectrons.MCSampleTag = cms.string( 'Summer11Leg' )
+  process.eventWeightMuons.MCSampleTag = cms.string( 'Summer11Leg' )
 
 electron_unfolding_analysers = [
     process.unfoldingProducerElectron,
@@ -111,6 +118,7 @@ for analyser in electron_unfolding_analysers:
     analyser.b_tag_weight_input = cms.InputTag( 'eventWeightBtagEPlusJets' )
     analyser.reco_jet_input = cms.InputTag( "topPairEPlusJetsSelection", electronselectionPrefix + 'cleanedJets', 'PAT' )
     analyser.electron_input = cms.InputTag( "topPairEPlusJetsSelection", electronselectionPrefix + 'signalElectron', 'PAT' )
+    analyser.leptonWeightsInputTag = cms.InputTag( "eventWeightElectrons" )
 
 muon_unfolding_analysers = [
     process.unfoldingProducerMuon,    
@@ -164,13 +172,14 @@ process.commonSequence = cms.Sequence(
 if not options.printEventContent:
     process.commonSequence.remove( process.printEventContent )
     
-# process.ePlusJetsUnfoldingAnalysis = cms.Path( 
-#           process.commonSequence *
-#           process.eventWeightBtagEPlusJets * 
-#           process.topPairEPlusJetsSelectionAnalyser *
-#           process.unfoldingProducerElectron *
-#           process.rootTupleTreeEPlusJets
-# 		  )
+process.ePlusJetsUnfoldingAnalysis = cms.Path( 
+          process.commonSequence *
+          process.eventWeightBtagEPlusJets * 
+          process.topPairEPlusJetsSelectionAnalyser *
+          process.eventWeightElectrons *
+          process.unfoldingProducerElectron *
+          process.rootTupleTreeEPlusJets
+		  )
 
 process.muPlusJetsUnfoldingAnalysis = cms.Path( 
           process.commonSequence *
