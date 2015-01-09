@@ -44,6 +44,8 @@ TopPairMuonPlusJetsSelectionFilter::TopPairMuonPlusJetsSelectionFilter(const edm
 		bJetDiscriminator_(iConfig.getParameter<std::string>("bJetDiscriminator")), //
 		minBJetDiscriminator_(iConfig.getParameter<double>("minBJetDiscriminator")), //
 
+        controlMuonIso_(iConfig.getParameter<double>("controlMuonIsolation")), //
+
 		// Flags and labels
 		tagAndProbeStudies_(iConfig.getParameter<bool>("tagAndProbeStudies")), //
 		dropTriggerSelection_(iConfig.getParameter<bool>("dropTriggerSelection")), //
@@ -109,6 +111,8 @@ void TopPairMuonPlusJetsSelectionFilter::fillDescriptions(edm::ConfigurationDesc
 	desc.add<double>("cleaningDeltaR", 0.3 );
 	desc.add < std::string > ("bJetDiscriminator", "combinedSecondaryVertexBJetTags");
 	desc.add<double>("minBJetDiscriminator", 0.679 );
+
+	desc.add<double>("controlMuonIsolation", 0.3);
 
 	desc.add<bool>("tagAndProbeStudies", false);
 	desc.add<bool>("dropTriggerSelection", false);
@@ -176,6 +180,18 @@ bool TopPairMuonPlusJetsSelectionFilter::filter(edm::Event& iEvent, const edm::E
 		// Note if event passes all but bjet selection steps
 		if ( step < TTbarMuPlusJetsReferenceSelection::AtLeastOneBtag )
 			passesSelectionExceptBtagging = passesSelectionExceptBtagging && passesStep;
+
+		// Remove at least 4 jet selection for QCD control region (only need at least 3)
+       	// Also require exactly zero b jets
+       	// Or exactly one b jet, as e.g. angle(b,l) only makes sense if there is at least one b jet
+		if ( nonIsolatedMuonSelection_ ) {
+			if ( step == TTbarMuPlusJetsReferenceSelection::AtLeastFourGoodJets )
+			       passesStep = true;
+	
+			if ( step == TTbarMuPlusJetsReferenceSelection::AtLeastOneBtag || step == TTbarMuPlusJetsReferenceSelection::AtLeastTwoBtags ) {
+			       passesStep = hasExactlyZeroGoodBJet() || hasExactlyOneGoodBJet() ;
+			}
+		}
 
 		// if doesn't pass selection and not in tagging mode, stop here to save CPU time
 		if ( !(taggingMode_ || passesSelection) )
@@ -331,7 +347,12 @@ void TopPairMuonPlusJetsSelectionFilter::goodIsolatedMuons() {
 		const pat::Muon muon = muons_.at(index);
 
 		// bool passesIso = getRelativeIsolation(muon, 0.4, useDeltaBetaCorrectionsForMuons_) < tightMuonIso_;
-		bool passesIso = true;
+		bool passesIso = false;
+
+        if ( nonIsolatedMuonSelection_ )
+        	passesIso = getRelativeIsolation(muon, 0.4, true) > controlMuonIso_;
+	   	else
+           	passesIso = true;
 
 		if (isGoodMuon(muon) && passesIso) {
 			goodIsolatedMuons_.push_back(muon);
@@ -557,11 +578,11 @@ bool TopPairMuonPlusJetsSelectionFilter::hasAtLeastFourGoodJets() const {
 }
 
 bool TopPairMuonPlusJetsSelectionFilter::hasExactlyZeroGoodBJet() const {
-	return cleanedBJets_.size() == 0;
+       return cleanedBJets_.size() == 0;
 }
 
 bool TopPairMuonPlusJetsSelectionFilter::hasExactlyOneGoodBJet() const {
-	return cleanedBJets_.size() == 1;
+       return cleanedBJets_.size() == 1;
 }
 
 bool TopPairMuonPlusJetsSelectionFilter::hasAtLeastOneGoodBJet() const {

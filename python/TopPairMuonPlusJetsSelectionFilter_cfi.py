@@ -25,6 +25,9 @@ topPairMuPlusJetsSelection = cms.EDFilter('TopPairMuonPlusJetsSelectionFilter',
     # Jet cleaning delta R
     cleaningDeltaR=cms.double(0.3),
 
+    # Minimum isolation for control region
+    controlMuonIsolation=cms.double(0.3),
+
     # B Jet Selection
     # Working points taken from https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideBTagging#Preliminary_working_or_operating
     bJetDiscriminator=cms.string('combinedInclusiveSecondaryVertexV2BJetTags'),

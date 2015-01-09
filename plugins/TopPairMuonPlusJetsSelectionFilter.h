@@ -82,8 +82,8 @@ public:
 	virtual bool hasAtLeastTwoGoodJets() const;
 	virtual bool hasAtLeastThreeGoodJets() const;
 	virtual bool hasAtLeastFourGoodJets() const;
-	virtual bool hasExactlyZeroGoodBJet() const;
-	virtual bool hasExactlyOneGoodBJet() const;
+   	virtual bool hasExactlyZeroGoodBJet() const;
+   	virtual bool hasExactlyOneGoodBJet() const;
 	virtual bool hasAtLeastOneGoodBJet() const;
 	virtual bool hasAtLeastTwoGoodBJets() const;
 
@@ -102,13 +102,15 @@ private:
 	std::string bJetDiscriminator_;
 	double minBJetDiscriminator_;
 
+	double controlMuonIso_;
+
 	bool tagAndProbeStudies_, dropTriggerSelection_;
 
 	std::string prefix_, MCSampleTag_;
 
 	bool debug_, taggingMode_, bSelectionInTaggingMode_;
 
-	// Control region selections
+   	// Control region selections
 	bool nonIsolatedMuonSelection_;
 
 	//internal
