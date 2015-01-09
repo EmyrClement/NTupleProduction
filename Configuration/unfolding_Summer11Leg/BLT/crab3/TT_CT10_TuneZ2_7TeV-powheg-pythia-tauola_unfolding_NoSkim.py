@@ -33,7 +33,7 @@ config.JobType.inputFiles = [
 'BristolAnalysis/NTupleTools/data/ScaleFactors/scaleFactors_electron_trigger.root'
 ]
 
-config.JobType.pyCfgParams = ['useData=0', 'dataType=TTJets', 'isTTbarMC=1', 'skim=NoSkim', 'CMSSW=53X', 'centreOfMassEnergy=7', 'storePDFWeights=0', 'applyType0METcorrection=1', 'applySysShiftCorrection=1']
+config.JobType.pyCfgParams = ['useData=0', 'dataType=TT_powheg_pythia', 'isTTbarMC=1', 'skim=NoSkim', 'CMSSW=53X', 'centreOfMassEnergy=7', 'storePDFWeights=0', 'applyType0METcorrection=1', 'applySysShiftCorrection=1']
 config.section_('Data')
 config.Data.inputDataset = '/TT_weights_CT10_TuneZ2_7TeV-powheg-pythia-tauola/Summer11LegDR-PU_S13_START53_LV6-v2/AODSIM'
 config.Data.unitsPerJob = 3
