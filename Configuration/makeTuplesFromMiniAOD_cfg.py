@@ -7,9 +7,10 @@ process.GlobalTag.globaltag = cms.string('PLS170_V7AN2::All')
 
 ## Source
 process.source = cms.Source("PoolSource",
-    # fileNames = cms.untracked.vstring('file:/storage/ec6821/NTupleProd/CMSSW_7_2_3/src/TT_pythia8_PHYS14.root')
-    fileNames = cms.untracked.vstring('file:/storage/ec6821/NTupleProd/CMSSW_7_2_3/src/TT_madgraph_PHYS14.root')
+    # fileNames = cms.untracked.vstring('file:/storage/ec6821/NTupleProd/CMSSW_7_3_0/src/TT_pythia8_PHYS14.root')
+    # fileNames = cms.untracked.vstring('file:/storage/ec6821/NTupleProd/CMSSW_7_2_3/src/TT_madgraph_PHYS14.root')
     # fileNames = cms.untracked.vstring('file:/home/ec6821/CMSSW_7_2_2/src/WJetsPhys14.root')
+    fileNames = cms.untracked.vstring('file:/storage/ec6821/NTupleProd/CMSSW_7_3_0/src/DY_PHYS14.root')
 )
 
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
@@ -92,12 +93,10 @@ process.nTupleTree.outputCommands.append( 'keep bool_topPairEPlusJetsSelectionTa
 
 
 if options.selectionInTaggingMode:
-  process.makingNTuplesMuons.remove( process.topPairMuPlusJetsSelection )
-  process.makingNTuplesElectrons.remove( process.topPairEPlusJetsSelection )
+  process.makingNTuples.remove( process.topPairMuPlusJetsSelection )
 
 if not options.isTTbarMC:
-  process.makingNTuplesMuons.remove( process.ttGenEvent )
-  process.makingNTuplesElectrons.remove( process.ttGenEvent )
+  process.makingNTuples.remove( process.ttGenEvent )
 else:
   process.nTupleGenEventInfo.isTTbarMC = cms.bool( True )
 
