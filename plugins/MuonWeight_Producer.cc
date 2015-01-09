@@ -18,7 +18,7 @@ MuonWeight_Producer::MuonWeight_Producer(const edm::ParameterSet& iConfig) :
 		Systematic_(iConfig.getParameter<int>("MuonSystematic")) {
 	produces<std::vector<double> >();
 
-	std::string muonScaleFactorsFile("BristolAnalysis/NTupleTools/data/ScaleFactors/MuonEfficiencies_SF_2011_53X_DataMC.root");
+	std::string muonScaleFactorsFile("MuonEfficiencies_SF_2011_53X_DataMC.root");
 	if (!boost::filesystem::exists(muonScaleFactorsFile)) {
 	cerr << "ConfigFile::getMuonIdIsoScaleFactorsHistogram(" << muonScaleFactorsFile << "): could not find file" << endl;
 	throw "Could not find muon ID & iso scale factors histogram file in " + muonScaleFactorsFile;

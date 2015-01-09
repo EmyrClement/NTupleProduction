@@ -19,7 +19,7 @@ ElectronWeight_Producer::ElectronWeight_Producer(const edm::ParameterSet& iConfi
 		Systematic_(iConfig.getParameter<int>("ElectronSystematic")) {
 	produces<std::vector<double> >();
 
-	std::string electronIDScaleFactorsFile("BristolAnalysis/NTupleTools/data/ScaleFactors/scaleFactors_electron_id_iso.root");
+	std::string electronIDScaleFactorsFile("scaleFactors_electron_id_iso.root");
 	if (!boost::filesystem::exists(electronIDScaleFactorsFile)) {
 	cerr << "ConfigFile::getElectronIdIsoScaleFactorsHistogram(" << electronIDScaleFactorsFile << "): could not find file" << endl;
 	throw "Could not find electron ID & iso scale factors histogram file in " + electronIDScaleFactorsFile;
@@ -29,7 +29,7 @@ ElectronWeight_Producer::ElectronWeight_Producer(const edm::ParameterSet& iConfi
 	electronIdIsoScaleFactorsHistogram_ = (boost::shared_ptr<TH2F>) (TH2F*) idFile->Get("scaleFactors")->Clone() ;
 	idFile->Close();
 
-	std::string electronTriggerEfficiencyFile("BristolAnalysis/NTupleTools/data/ScaleFactors/scaleFactors_electron_trigger.root");
+	std::string electronTriggerEfficiencyFile("scaleFactors_electron_trigger.root");
 	if (!boost::filesystem::exists(electronTriggerEfficiencyFile)) {
 	cerr << "ConfigFile::getElectronIdIsoScaleFactorsHistogram(" << electronTriggerEfficiencyFile << "): could not find file" << endl;
 	throw "Could not find electron ID & iso scale factors histogram file in " + electronTriggerEfficiencyFile;
@@ -39,7 +39,7 @@ ElectronWeight_Producer::ElectronWeight_Producer(const edm::ParameterSet& iConfi
 	electronTriggerEfficiencyHistogram_ = (boost::shared_ptr<TEfficiency>) (TEfficiency*) triggerFile->Get("data")->Clone() ;
 	triggerFile->Close();
 
-	std::string hadronLegEfficiencyFileName("BristolAnalysis/NTupleTools/data/ScaleFactors/hadronLegEfficiencies_electron.root");
+	std::string hadronLegEfficiencyFileName("hadronLegEfficiencies_electron.root");
 	if (!boost::filesystem::exists(hadronLegEfficiencyFileName)) {
 	cerr << "ConfigFile::getElectronIdIsoScaleFactorsHistogram(" << hadronLegEfficiencyFileName << "): could not find file" << endl;
 	throw "Could not find electron ID & iso scale factors histogram file in " + hadronLegEfficiencyFileName;
