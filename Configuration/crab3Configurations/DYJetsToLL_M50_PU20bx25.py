@@ -3,7 +3,8 @@ config = Configuration()
 
 config.section_("General")
 config.General.requestName = 'DYJetsToLL_M50_PU20bx25'
-config.General.workArea = 'workdirCrab'
+config.General.workArea = 'workdirCrab/v1/2014-12-31'
+config.General.transferOutputs = True
 
 config.section_("JobType")
 config.JobType.pluginName = 'Analysis'
