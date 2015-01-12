@@ -3,7 +3,7 @@ config = Configuration()
 
 config.section_("General")
 config.General.requestName = 'TToLeptons_t_PU20bx25'
-config.General.workArea = 'workdirCrab/v1/2014-12-31'
+config.General.workArea = 'workdirCrab/v1/2015-01-09'
 config.General.transferOutputs = True
 
 config.section_("JobType")
