@@ -25,6 +25,8 @@ topPairMuPlusJetsSelection = cms.EDFilter('TopPairMuonPlusJetsSelectionFilter',
     # Jet cleaning delta R
     cleaningDeltaR=cms.double(0.3),
 
+    # Maximum isolation for signal region
+    tightMuonIsolation=cms.double(0.12),
     # Minimum isolation for control region
     controlMuonIsolation=cms.double(0.3),
 

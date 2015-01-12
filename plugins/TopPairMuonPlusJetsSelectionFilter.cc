@@ -44,6 +44,7 @@ TopPairMuonPlusJetsSelectionFilter::TopPairMuonPlusJetsSelectionFilter(const edm
 		bJetDiscriminator_(iConfig.getParameter<std::string>("bJetDiscriminator")), //
 		minBJetDiscriminator_(iConfig.getParameter<double>("minBJetDiscriminator")), //
 
+		tightMuonIso_(iConfig.getParameter<double>("tightMuonIsolation")), //
         controlMuonIso_(iConfig.getParameter<double>("controlMuonIsolation")), //
 
 		// Flags and labels
@@ -112,6 +113,7 @@ void TopPairMuonPlusJetsSelectionFilter::fillDescriptions(edm::ConfigurationDesc
 	desc.add < std::string > ("bJetDiscriminator", "combinedSecondaryVertexBJetTags");
 	desc.add<double>("minBJetDiscriminator", 0.679 );
 
+	desc.add<double>("tightMuonIsolation", 0.12);
 	desc.add<double>("controlMuonIsolation", 0.3);
 
 	desc.add<bool>("tagAndProbeStudies", false);
@@ -131,7 +133,7 @@ TopPairMuonPlusJetsSelectionFilter::~TopPairMuonPlusJetsSelectionFilter() {
 }
 
 bool TopPairMuonPlusJetsSelectionFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup) {
-	
+
 	// Get content from event
 	// Including selecting a signal muon, loose leptons, jets and bjets
 	setupEventContent(iEvent);
@@ -343,23 +345,34 @@ void TopPairMuonPlusJetsSelectionFilter::goodIsolatedMuons() {
 	goodIsolatedMuons_.clear();
 
 	// Get muons that pass the full selection
+	unsigned int indexToStore = 0;
 	for (unsigned index = 0; index < muons_.size(); ++index) {
 		const pat::Muon muon = muons_.at(index);
+
+		// Only these muons are stored in the ntuple
+		// Due to info on tracks not being available for SA muons
+		// This is part of tight muon ID
+		// But still have to do this (and faff with indexToStore) to get index of 
+		// muon out of those that get stored in the ntuple (all but SA muons)
+		if (!( muon.isGlobalMuon() || muon.isTrackerMuon() ) )
+			continue;
 
 		// bool passesIso = getRelativeIsolation(muon, 0.4, useDeltaBetaCorrectionsForMuons_) < tightMuonIso_;
 		bool passesIso = false;
 
-        if ( nonIsolatedMuonSelection_ )
+        if ( nonIsolatedMuonSelection_ ) {
         	passesIso = getRelativeIsolation(muon, 0.4, true) > controlMuonIso_;
+		}
 	   	else
-           	passesIso = true;
+           	passesIso = getRelativeIsolation(muon, 0.4, true) < tightMuonIso_;
 
 		if (isGoodMuon(muon) && passesIso) {
 			goodIsolatedMuons_.push_back(muon);
 
 			//Check if this is the first, and therefore the signal, muon
-			if ( goodIsolatedMuons_.size()==1 ) signalMuonIndex_ = index;
+			if ( goodIsolatedMuons_.size()==1 ) signalMuonIndex_ = indexToStore;
 		}
+		++indexToStore;
 	}
 }
 
