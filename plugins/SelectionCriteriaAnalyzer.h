@@ -10,20 +10,6 @@
 #include "FWCore/Utilities/interface/InputTag.h"
 
 
-namespace SelectionCriteria {
-enum SelectionCriteria {
-	MuonSelection,
-	ElectronSelection,
-	NUMBER_OF_SELECTION_STEPS
-};
-
-const std::string StringSelectionCriteria[NUMBER_OF_SELECTION_STEPS] = { //
-		"MuonSelection", //
-		"ElectronSelection"
-		};
-}
-
-
 class SelectionCriteriaAnalyzer: public edm::EDFilter {
 public:
 	explicit SelectionCriteriaAnalyzer(const edm::ParameterSet&);
@@ -36,12 +22,8 @@ public:
 
 	static void fillDescriptions(edm::ConfigurationDescriptions & descriptions);
 private:
-	// virtual void setupEventContent(edm::Event& iEvent);
-
 	//config
 	std::vector<edm::InputTag> selectionCriteriaInput_;
-
-	bool passMuonSelection_, passElectronSelection_;
 
 };
 

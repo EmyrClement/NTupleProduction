@@ -13,9 +13,7 @@ using namespace std;
 
 SelectionCriteriaAnalyzer::SelectionCriteriaAnalyzer(const edm::ParameterSet& iConfig) :
 		// Input tags
-		selectionCriteriaInput_(iConfig.getParameter < std::vector<edm::InputTag> > ("selectionCriteriaInput")), //
-		passMuonSelection_(false),
-		passElectronSelection_(false)
+		selectionCriteriaInput_(iConfig.getParameter < std::vector<edm::InputTag> > ("selectionCriteriaInput")) //
 {
 	produces< vector<unsigned int> >("passesSelection");
 }
@@ -29,9 +27,6 @@ SelectionCriteriaAnalyzer::~SelectionCriteriaAnalyzer() {
 
 bool SelectionCriteriaAnalyzer::filter(edm::Event& iEvent, const edm::EventSetup& iSetup) {
 	
-	// Get content from event
-	// Including selecting a signal muon, loose leptons, jets and bjets
-	// setupEventContent(iEvent);
 	std::auto_ptr< vector<unsigned int> > passesSelection(new vector<unsigned int>());
 
 
