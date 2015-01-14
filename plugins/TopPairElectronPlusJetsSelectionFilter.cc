@@ -41,6 +41,7 @@ TopPairElectronPlusJetsSelectionFilter::TopPairElectronPlusJetsSelectionFilter(c
 		min2JetPt_(iConfig.getParameter<double>("min2JetPt")), //
 		min3JetPt_(iConfig.getParameter<double>("min3JetPt")), //
 		min4JetPt_(iConfig.getParameter<double>("min4JetPt")), //
+		minJetPtInNtuples_(iConfig.getParameter<double>("minJetPtInNtuples")), //
 
 		cleaningDeltaR_(iConfig.getParameter<double>("cleaningDeltaR")), //
 
@@ -117,6 +118,7 @@ void TopPairElectronPlusJetsSelectionFilter::fillDescriptions(edm::Configuration
 	desc.add<double>("min2JetPt", 30.0);
 	desc.add<double>("min3JetPt", 30.0);
 	desc.add<double>("min4JetPt", 30.0);
+	desc.add<double>("minJetPtInNtuples", 20.0);
 
 	desc.add<double>("cleaningDeltaR", 0.3 );
 	desc.add < std::string > ("bJetDiscriminator", "combinedSecondaryVertexBJetTags");
@@ -370,12 +372,22 @@ void TopPairElectronPlusJetsSelectionFilter::cleanedJets() {
 	cleanedJetIndex_.clear();
 
 	// Loop over jets
+	unsigned int indexInNtuple = 0;
 	for (unsigned index = 0; index < jets_.size(); ++index) {
 		const pat::Jet jet = jets_.at(index);
 
-		// Check jet passes selection criteria
-		if (!isGoodJet(jet))
+		// Only jets with pt> ~20 end up in the ntuple
+		// isGoodJet also requires other selection, so have to check pt here first
+		// to get index of cleaned jets in jets that end up in ntuple
+		if ( jet.pt() <= minJetPtInNtuples_ ) {
 			continue;
+		}
+
+		// Check jet passes selection criteria
+		if (!isGoodJet(jet)){
+			indexInNtuple++;
+			continue;
+		}
 
 		// Check if jet overlaps with the signal muon
 		bool overlaps(false);
@@ -397,8 +409,9 @@ void TopPairElectronPlusJetsSelectionFilter::cleanedJets() {
 		// Keep jet if it doesn't overlap with the signal electron
 		if (!overlaps){
 			cleanedJets_.push_back(jet);
-			cleanedJetIndex_.push_back(index);
+			cleanedJetIndex_.push_back(indexInNtuple);
 		}
+		indexInNtuple++;
 	}
 }
 
