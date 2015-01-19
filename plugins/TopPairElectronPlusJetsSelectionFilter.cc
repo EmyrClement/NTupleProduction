@@ -41,6 +41,7 @@ TopPairElectronPlusJetsSelectionFilter::TopPairElectronPlusJetsSelectionFilter(c
 		min2JetPt_(iConfig.getParameter<double>("min2JetPt")), //
 		min3JetPt_(iConfig.getParameter<double>("min3JetPt")), //
 		min4JetPt_(iConfig.getParameter<double>("min4JetPt")), //
+		minBJetPt_(iConfig.getParameter<double>("minBJetPt")), //
 		minJetPtInNtuples_(iConfig.getParameter<double>("minJetPtInNtuples")), //
 
 		cleaningDeltaR_(iConfig.getParameter<double>("cleaningDeltaR")), //
@@ -58,13 +59,9 @@ TopPairElectronPlusJetsSelectionFilter::TopPairElectronPlusJetsSelectionFilter(c
 		taggingMode_(iConfig.getParameter<bool>("taggingMode")), //
 		jetSelectionInTaggingMode_(iConfig.getParameter<bool>("jetSelectionInTaggingMode")), //
 		bSelectionInTaggingMode_(iConfig.getParameter<bool>("bSelectionInTaggingMode")), //
-<<<<<<< HEAD
+
 		nonIsolatedElectronSelection_(iConfig.getParameter<bool>("nonIsolatedElectronSelection")), //
 		invertedConversionSelection_(iConfig.getParameter<bool>("invertedConversionSelection")), //
-=======
-       	nonIsolatedElectronSelection_(iConfig.getParameter<bool>("nonIsolatedElectronSelection")), //
-       	invertedConversionSelection_(iConfig.getParameter<bool>("invertedConversionSelection")), //
->>>>>>> Add qcd control regions to ntuples.
 		passes_(), //
 		runNumber_(0), //
 		signalElectronIndex_(999), //
@@ -118,7 +115,8 @@ void TopPairElectronPlusJetsSelectionFilter::fillDescriptions(edm::Configuration
 	desc.add<double>("min2JetPt", 30.0);
 	desc.add<double>("min3JetPt", 30.0);
 	desc.add<double>("min4JetPt", 30.0);
-	desc.add<double>("minJetPtInNtuples", 20.0);
+	desc.add<double>("minBJetPt", 30.0);
+	desc.add<double>("minJetPtInNtuples", 30.0);
 
 	desc.add<double>("cleaningDeltaR", 0.3 );
 	desc.add < std::string > ("bJetDiscriminator", "combinedSecondaryVertexBJetTags");
@@ -213,6 +211,12 @@ bool TopPairElectronPlusJetsSelectionFilter::filter(edm::Event& iEvent, const ed
 	// iEvent.put(jetoutput, prefix_ + "cleanedJets");
 
 	iEvent.put(std::auto_ptr<unsigned int>(new unsigned int(signalElectronIndex_)),prefix_ + "signalElectronIndex");
+
+
+	if ( nonIsolatedElectronSelection_ && passesSelection ) {
+		cout << "Electron pt, eta : " << signalElectron_.pt() << " " << signalElectron_.eta() << endl;
+		cout << "Pass conversion veto : " << signalElectron_.passConversionVeto() << endl;
+	}
 
 	if ( bSelectionInTaggingMode_ )
 		return taggingMode_ || passesSelectionExceptBtagging;
@@ -422,7 +426,10 @@ void TopPairElectronPlusJetsSelectionFilter::cleanedBJets() {
 	// Loop over cleaned jets
 	for (unsigned index = 0; index < cleanedJets_.size(); ++index) {
 		const pat::Jet jet = cleanedJets_.at(index);
-		
+
+		// Check b jet passes pt requirement (probably same as min jet pt unless assymmetric)
+		if ( jet.pt() <= minBJetPt_ ) continue;
+
 		// Does jet pass b tag selection
 		if (jet.bDiscriminator(bJetDiscriminator_) > minBJetDiscriminator_) {
 			// Keep if it does
@@ -434,8 +441,9 @@ void TopPairElectronPlusJetsSelectionFilter::cleanedBJets() {
 
 bool TopPairElectronPlusJetsSelectionFilter::isGoodJet(const pat::Jet& jet) const {
 	//both cuts are done at PAT config level (selectedPATJets) this is just for safety
-	double smearFactor = getSmearedJetPtScale(jet, 0);
-	bool passesPtAndEta(smearFactor*jet.pt() > 20. && fabs(jet.eta()) < 2.5);
+	// double smearFactor = getSmearedJetPtScale(jet, 0);
+	// bool passesPtAndEta(smearFactor*jet.pt() > 20. && fabs(jet.eta()) < 2.5);
+	bool passesPtAndEta(jet.pt() > minJetPtInNtuples_ && fabs(jet.eta()) < 2.5);
 	bool passesJetID(false);
 	bool passNOD = jet.numberOfDaughters() > 1;
 	bool passNHF = jet.neutralHadronEnergyFraction() < 0.99;
@@ -568,6 +576,7 @@ bool TopPairElectronPlusJetsSelectionFilter::passesConversionVeto() const {
 		return false;
 
 	bool passVeto = signalElectron_.passConversionVeto();
+
    if ( invertedConversionSelection_ )
            return !passVeto;
    else
@@ -576,7 +585,8 @@ bool TopPairElectronPlusJetsSelectionFilter::passesConversionVeto() const {
 
 bool TopPairElectronPlusJetsSelectionFilter::hasAtLeastOneGoodJet() const {
 	if (cleanedJets_.size() > 0)
-		return getSmearedJetPtScale(cleanedJets_.at(0), 0)*cleanedJets_.at(0).pt() > min1JetPt_;
+		return cleanedJets_.at(0).pt() > min1JetPt_;
+		// return getSmearedJetPtScale(cleanedJets_.at(0), 0)*cleanedJets_.at(0).pt() > min1JetPt_;
 
 	return false;
 
@@ -584,21 +594,24 @@ bool TopPairElectronPlusJetsSelectionFilter::hasAtLeastOneGoodJet() const {
 
 bool TopPairElectronPlusJetsSelectionFilter::hasAtLeastTwoGoodJets() const {
 	if (cleanedJets_.size() > 1)
-		return getSmearedJetPtScale(cleanedJets_.at(1), 0)*cleanedJets_.at(1).pt() > min2JetPt_;
+		return cleanedJets_.at(1).pt() > min2JetPt_;
+		// return getSmearedJetPtScale(cleanedJets_.at(1), 0)*cleanedJets_.at(1).pt() > min2JetPt_;
 
 	return false;
 }
 
 bool TopPairElectronPlusJetsSelectionFilter::hasAtLeastThreeGoodJets() const {
 	if (cleanedJets_.size() > 2)
-		return getSmearedJetPtScale(cleanedJets_.at(2), 0)*cleanedJets_.at(2).pt() > min3JetPt_;
+		return cleanedJets_.at(2).pt() > min3JetPt_;
+		// return getSmearedJetPtScale(cleanedJets_.at(2), 0)*cleanedJets_.at(2).pt() > min3JetPt_;
 
 	return false;
 }
 
 bool TopPairElectronPlusJetsSelectionFilter::hasAtLeastFourGoodJets() const {
 	if (cleanedJets_.size() > 3)
-		return getSmearedJetPtScale(cleanedJets_.at(3), 0)*cleanedJets_.at(3).pt() > min4JetPt_;
+		return cleanedJets_.at(3).pt() > min4JetPt_;
+		// return getSmearedJetPtScale(cleanedJets_.at(3), 0)*cleanedJets_.at(3).pt() > min4JetPt_;
 
 	return false;
 }

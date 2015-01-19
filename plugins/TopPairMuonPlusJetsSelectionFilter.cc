@@ -38,6 +38,7 @@ TopPairMuonPlusJetsSelectionFilter::TopPairMuonPlusJetsSelectionFilter(const edm
 		min2JetPt_(iConfig.getParameter<double>("min2JetPt")), //
 		min3JetPt_(iConfig.getParameter<double>("min3JetPt")), //
 		min4JetPt_(iConfig.getParameter<double>("min4JetPt")), //
+		minBJetPt_(iConfig.getParameter<double>("minBJetPt")), //
 		minJetPtInNtuples_(iConfig.getParameter<double>("minJetPtInNtuples")), //
 
 		cleaningDeltaR_(iConfig.getParameter<double>("cleaningDeltaR")), //
@@ -109,7 +110,8 @@ void TopPairMuonPlusJetsSelectionFilter::fillDescriptions(edm::ConfigurationDesc
 	desc.add<double>("min2JetPt", 30.0);
 	desc.add<double>("min3JetPt", 30.0);
 	desc.add<double>("min4JetPt", 30.0);
-	desc.add<double>("minJetPtInNtuples", 20.0);
+	desc.add<double>("minBJetPt", 30.0);
+	desc.add<double>("minJetPtInNtuples", 30.0);
 
 	desc.add<double>("cleaningDeltaR", 0.3 );
 	desc.add < std::string > ("bJetDiscriminator", "combinedSecondaryVertexBJetTags");
@@ -139,22 +141,6 @@ bool TopPairMuonPlusJetsSelectionFilter::filter(edm::Event& iEvent, const edm::E
 	// Get content from event
 	// Including selecting a signal muon, loose leptons, jets and bjets
 	setupEventContent(iEvent);
-
-	// Store number of cleaned jets in event
-	unsigned int numberOfJets(cleanedJets_.size());
-	iEvent.put(std::auto_ptr<unsigned int>(new unsigned int(numberOfJets)), prefix_ + "NumberOfJets");
-
-	// Store indices of cleaned jets in event
-	iEvent.put(std::auto_ptr<std::vector<unsigned int> >(new std::vector<unsigned int>(cleanedJetIndex_)), prefix_ + "cleanedJetIndex");
-
-	// Store number of b tags in event
-	unsigned int numberOfBtags(cleanedBJets_.size());
-	iEvent.put(std::auto_ptr<unsigned int>(new unsigned int(numberOfBtags)), prefix_ + "NumberOfBtags");
-	iEvent.put(std::auto_ptr<std::vector<unsigned int> >(new std::vector<unsigned int>(cleanedBJetIndex_)), prefix_ + "cleanedBJetIndex");
-
-	// Prepare output of cleaned jets
-	// std::auto_ptr < pat::JetCollection > jetoutput(new pat::JetCollection());
-
 
 	// Loop through each selection step in order and check if event satisfies each criterion
 	bool passesSelection(true);
@@ -209,10 +195,17 @@ bool TopPairMuonPlusJetsSelectionFilter::filter(edm::Event& iEvent, const edm::E
 	}
 	iEvent.put(std::auto_ptr<bool>(new bool(passesSelection)), prefix_ + "FullSelection");
 
-	// Put cleaned jets in event
-	// for (unsigned int index = 0; index < cleanedJets_.size(); ++index)
-		// jetoutput->push_back(cleanedJets_.at(index));
-	// iEvent.put(jetoutput, prefix_ + "cleanedJets");
+	// Store number of cleaned jets in event
+	unsigned int numberOfJets(cleanedJets_.size());
+	iEvent.put(std::auto_ptr<unsigned int>(new unsigned int(numberOfJets)), prefix_ + "NumberOfJets");
+
+	// Store indices of cleaned jets in event
+	iEvent.put(std::auto_ptr<std::vector<unsigned int> >(new std::vector<unsigned int>(cleanedJetIndex_)), prefix_ + "cleanedJetIndex");
+
+	// Store number of b tags in event
+	unsigned int numberOfBtags(cleanedBJets_.size());
+	iEvent.put(std::auto_ptr<unsigned int>(new unsigned int(numberOfBtags)), prefix_ + "NumberOfBtags");
+	iEvent.put(std::auto_ptr<std::vector<unsigned int> >(new std::vector<unsigned int>(cleanedBJetIndex_)), prefix_ + "cleanedBJetIndex");
 
 	// Store index of signal muon
 	iEvent.put(std::auto_ptr<unsigned int>(new unsigned int(signalMuonIndex_)),prefix_ + "signalMuonIndex");
@@ -447,6 +440,9 @@ void TopPairMuonPlusJetsSelectionFilter::cleanedBJets() {
 	for (unsigned index = 0; index < cleanedJets_.size(); ++index) {
 		const pat::Jet jet = cleanedJets_.at(index);
 
+		// Check b jet passes pt requirement (probably same as min jet pt unless assymmetric)
+		if ( jet.pt() <= minBJetPt_ ) continue;
+
 		// Does jet pass b tag selection
 		if (jet.bDiscriminator(bJetDiscriminator_) > minBJetDiscriminator_) {
 			// Keep if it does
@@ -458,8 +454,9 @@ void TopPairMuonPlusJetsSelectionFilter::cleanedBJets() {
 
 bool TopPairMuonPlusJetsSelectionFilter::isGoodJet(const pat::Jet& jet) const {
 	//both cuts are done at PAT config level (selectedPATJets) this is just for safety
-	double smearFactor = getSmearedJetPtScale(jet, 0);
-	bool passesPtAndEta(smearFactor*jet.pt() > 20. && fabs(jet.eta()) < 2.5);
+	// double smearFactor = getSmearedJetPtScale(jet, 0);
+	// bool passesPtAndEta(smearFactor*jet.pt() > 20. && fabs(jet.eta()) < 2.5);
+	bool passesPtAndEta(jet.pt() > minJetPtInNtuples_ && fabs(jet.eta()) < 2.5);
 	bool passesJetID(false);
 	bool passNOD = jet.numberOfDaughters() > 1;
 	bool passNHF = jet.neutralHadronEnergyFraction() < 0.99;
@@ -579,27 +576,35 @@ bool TopPairMuonPlusJetsSelectionFilter::passesLooseMuonVeto() const {
 }
 
 bool TopPairMuonPlusJetsSelectionFilter::hasAtLeastOneGoodJet() const {
-	if (cleanedJets_.size() > 0)		
-		return getSmearedJetPtScale(cleanedJets_.at(0), 0)*cleanedJets_.at(0).pt() > min1JetPt_;
+	if (cleanedJets_.size() > 0)
+		return cleanedJets_.at(0).pt() > min1JetPt_;
+		// return getSmearedJetPtScale(cleanedJets_.at(0), 0)*cleanedJets_.at(0).pt() > min1JetPt_;
+
 	return false;
 
 }
 
 bool TopPairMuonPlusJetsSelectionFilter::hasAtLeastTwoGoodJets() const {
 	if (cleanedJets_.size() > 1)
-		return getSmearedJetPtScale(cleanedJets_.at(1), 0)*cleanedJets_.at(1).pt() > min2JetPt_;
+		return cleanedJets_.at(1).pt() > min2JetPt_;
+		// return getSmearedJetPtScale(cleanedJets_.at(1), 0)*cleanedJets_.at(1).pt() > min2JetPt_;
+
 	return false;
 }
 
 bool TopPairMuonPlusJetsSelectionFilter::hasAtLeastThreeGoodJets() const {
 	if (cleanedJets_.size() > 2)
-		return getSmearedJetPtScale(cleanedJets_.at(2), 0)*cleanedJets_.at(2).pt() > min3JetPt_;
+		return cleanedJets_.at(2).pt() > min3JetPt_;
+		// return getSmearedJetPtScale(cleanedJets_.at(2), 0)*cleanedJets_.at(2).pt() > min3JetPt_;
+
 	return false;
 }
 
 bool TopPairMuonPlusJetsSelectionFilter::hasAtLeastFourGoodJets() const {
 	if (cleanedJets_.size() > 3)
-		return getSmearedJetPtScale(cleanedJets_.at(3), 0)*cleanedJets_.at(3).pt() > min4JetPt_;
+		return cleanedJets_.at(3).pt() > min4JetPt_;
+		// return getSmearedJetPtScale(cleanedJets_.at(3), 0)*cleanedJets_.at(3).pt() > min4JetPt_;
+
 	return false;
 }
 
