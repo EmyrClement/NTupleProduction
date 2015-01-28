@@ -29,6 +29,8 @@ def setup_ntupler(process, cms):
                'keep *_nTupleMET_*_*',
                # Gen Event
                'keep *_nTupleGenEventInfo_*_*',
+               # Gen Jets
+               'keep *_nTupleGenJets_*_*',
 
                # 'keep *_hitFitTtSemiLepEvent_MT_*',
 
@@ -67,7 +69,10 @@ def setup_ntupler(process, cms):
         process.nTupleMET +
 
         # Gen Event
-        process.nTupleGenEventInfo
+        process.nTupleGenEventInfo +
+
+        # Gen Jets
+        process.nTupleGenJets
     )
 
     process.muonNTuples = cms.Sequence( process.nTuples * process.nTupleTreeMuon )
