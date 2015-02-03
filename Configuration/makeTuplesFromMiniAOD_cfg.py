@@ -13,6 +13,8 @@ process.source = cms.Source("PoolSource",
     # fileNames = cms.untracked.vstring('file:/storage/ec6821/NTupleProd/CMSSW_7_3_0/src/DY_PHYS14.root')
     # fileNames = cms.untracked.vstring('file:/storage/ec6821/NTupleProd/CMSSW_7_3_0/src/pickevents_1_1_yG6.root')
 )
+# Use to skip events e.g. to reach a problematic event quickly
+# process.source.skipEvents = cms.untracked.uint32(40960)
 
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
 process.MessageLogger.cerr.threshold = 'INFO'
