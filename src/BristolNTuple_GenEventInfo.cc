@@ -16,6 +16,7 @@ using namespace std;
 
 BristolNTuple_GenEventInfo::BristolNTuple_GenEventInfo(const edm::ParameterSet& iConfig) : //
 		genEvtInfoInputTag(iConfig.getParameter < edm::InputTag > ("GenEventInfoInputTag")), //
+	    genJetsInputTag_(iConfig.getParameter<edm::InputTag>("GenJetsInputTag")),
 		ttbarDecayFlags_(iConfig.getParameter < std::vector<edm::InputTag> > ("ttbarDecayFlags")), //
 		puWeightsInputTag_(iConfig.getParameter < edm::InputTag > ("PUWeightsInputTag")), //
 		storePDFWeights_(iConfig.getParameter<bool>("StorePDFWeights")), //
@@ -23,6 +24,8 @@ BristolNTuple_GenEventInfo::BristolNTuple_GenEventInfo(const edm::ParameterSet& 
 		pdfWeightsInputTag_(iConfig.getParameter < edm::InputTag > ("PDFWeightsInputTag")), //
 		pileupInfoSrc_(iConfig.getParameter < edm::InputTag > ("pileupInfo")), //
 		tt_gen_event_input_(iConfig.getParameter < edm::InputTag > ("tt_gen_event_input")), //
+	    minGenJetPt_ (iConfig.getParameter<double> ("minGenJetPt")),
+	    maxGenJetAbsoluteEta_ (iConfig.getParameter<double> ("maxGenJetAbsoluteEta")),
 		prefix_(iConfig.getParameter < std::string > ("Prefix")), //
 		suffix_(iConfig.getParameter < std::string > ("Suffix")) {
 	produces<unsigned int>(prefix_ + "ProcessID" + suffix_);
@@ -34,6 +37,7 @@ BristolNTuple_GenEventInfo::BristolNTuple_GenEventInfo(const edm::ParameterSet& 
 	produces < std::vector<int> > (prefix_ + "PileUpOriginBX" + suffix_);
 	produces<unsigned int>(prefix_ + "TtbarDecay" + suffix_);
 	produces<double>(prefix_ + "leptonicTopPt" + suffix_ );
+	produces<int>(prefix_ + "leptonicBGenJetIndex" + suffix_ );
 }
 
 void BristolNTuple_GenEventInfo::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
@@ -48,6 +52,7 @@ void BristolNTuple_GenEventInfo::produce(edm::Event& iEvent, const edm::EventSet
 	std::auto_ptr < std::vector<int> > OriginBX(new std::vector<int>());
 	std::auto_ptr<unsigned int> ttbarDecay(new unsigned int());
 	std::auto_ptr<double> leptonicTopPt(new double());
+	std::auto_ptr<int> leptonicBGenJetIndex(new int());
 
 	*processID.get() = 0;
 	*ptHat.get() = 0.;
@@ -55,6 +60,8 @@ void BristolNTuple_GenEventInfo::produce(edm::Event& iEvent, const edm::EventSet
 	*ttbarDecay.get() = 0;
 
 	*leptonicTopPt.get() = 0;
+
+	*leptonicBGenJetIndex.get() = -1;
 
 	//-----------------------------------------------------------------
 	if (!iEvent.isRealData()) {
@@ -138,12 +145,48 @@ void BristolNTuple_GenEventInfo::produce(edm::Event& iEvent, const edm::EventSet
 						<< numberOfIdentifiedModes;
 			}
 
-			// Get parton info
-			edm::Handle < TtGenEvent > ttGenEvt;
-			iEvent.getByLabel(tt_gen_event_input_, ttGenEvt);
+			// Only get top parton info if ttbar decay chain has been identified
+			// t->Ws (~1% of top decays) are not recognised, and are ignored.
+			if (numberOfIdentifiedModes==1 ) {
 
-			if ( ttGenEvt->isSemiLeptonic() ) {
-				*leptonicTopPt.get() = ttGenEvt->leptonicDecayTop()->pt();
+				// Get parton info
+				edm::Handle < TtGenEvent > ttGenEvt;
+				iEvent.getByLabel(tt_gen_event_input_, ttGenEvt);
+
+				if ( ttGenEvt->isSemiLeptonic() ) {
+					*leptonicTopPt.get() = ttGenEvt->leptonicDecayTop()->pt();
+
+					// Get partons that should result in a gen jet
+					const reco::GenParticle * hadronicDecayQuark = ttGenEvt->hadronicDecayQuark();
+					const reco::GenParticle * hadronicDecayQuarkBar = ttGenEvt->hadronicDecayQuarkBar();
+					const reco::GenParticle * leptonicDecayB = ttGenEvt->leptonicDecayB();
+					const reco::GenParticle * hadronicDecayB = ttGenEvt->hadronicDecayB();
+
+					// Put these in a vector to pass in to JetPartonMatching
+					const vector< const reco::Candidate* > partonsToMatch = { hadronicDecayQuark, hadronicDecayQuarkBar, leptonicDecayB, hadronicDecayB };
+
+					// Get gen jets
+					edm::Handle < reco::GenJetCollection > genJets;
+					iEvent.getByLabel(genJetsInputTag_, genJets);
+
+					// Get subset of gen jets that are stored in ntuple
+					vector<reco::GenJet> genJetsInNtuple;
+					for (reco::GenJetCollection::const_iterator it = genJets->begin(); it != genJets->end(); ++it) {
+
+						if (it->pt() < minGenJetPt_ || fabs(it->eta()) > maxGenJetAbsoluteEta_ )
+							continue;
+
+						genJetsInNtuple.push_back( *it );
+					}
+
+					// Jet -> parton matching from:
+					// https://github.com/cms-sw/cmssw/blob/CMSSW_7_3_X/TopQuarkAnalysis/TopTools/interface/JetPartonMatching.h
+					JetPartonMatching matching( partonsToMatch, genJetsInNtuple, 0, true, true, 0.3 );
+
+					// Store indices of matched gen jets
+					*leptonicBGenJetIndex = matching.getMatchForParton(2);
+
+				}
 			}
 		}
 	}
@@ -158,5 +201,5 @@ void BristolNTuple_GenEventInfo::produce(edm::Event& iEvent, const edm::EventSet
 	iEvent.put(OriginBX, prefix_ + "PileUpOriginBX" + suffix_);
 	iEvent.put(ttbarDecay, prefix_ + "TtbarDecay" + suffix_);
 	iEvent.put(leptonicTopPt, prefix_ + "leptonicTopPt" + suffix_);
-
+	iEvent.put(leptonicBGenJetIndex, prefix_ + "leptonicBGenJetIndex" + suffix_);
 }
