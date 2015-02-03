@@ -38,13 +38,13 @@ BristolNTuple_GenEventInfo::BristolNTuple_GenEventInfo(const edm::ParameterSet& 
 	produces<unsigned int>(prefix_ + "TtbarDecay" + suffix_);
 
 
-
+	produces<int>(prefix_ + "leptonicBGenJetIndex" + suffix_ );
+	produces<int>(prefix_ + "hadronicBGenJetIndex" + suffix_ );
+	produces<int>(prefix_ + "hadronicDecayQuarkBarGenJetIndex" + suffix_ );
+	produces<int>(prefix_ + "hadronicDecayQuarkGenJetIndex" + suffix_ );
 
 
 	produces<double>(prefix_ + "leptonicTopPt" + suffix_ );
-
-	produces<int>(prefix_ + "leptonicBGenJetIndex" + suffix_ );
-
 	produces<double>(prefix_ + "leptonicTopPx" + suffix_ );
 	produces<double>(prefix_ + "leptonicTopPy" + suffix_ );
 	produces<double>(prefix_ + "leptonicTopPz" + suffix_ );
@@ -115,10 +115,13 @@ void BristolNTuple_GenEventInfo::produce(edm::Event& iEvent, const edm::EventSet
 	std::auto_ptr < std::vector<int> > OriginBX(new std::vector<int>());
 	std::auto_ptr<unsigned int> ttbarDecay(new unsigned int());
 
+	std::auto_ptr<int> leptonicBGenJetIndex(new int());
+	std::auto_ptr<int> hadronicBGenJetIndex(new int());
+	std::auto_ptr<int> hadronicDecayQuarkBarGenJetIndex(new int());
+	std::auto_ptr<int> hadronicDecayQuarkGenJetIndex(new int());
 
 
 	std::auto_ptr<double> leptonicTopPt(new double());
-	std::auto_ptr<int> leptonicBGenJetIndex(new int());
 	std::auto_ptr<double> leptonicTopPx(new double());
 	std::auto_ptr<double> leptonicTopPy(new double());
 	std::auto_ptr<double> leptonicTopPz(new double());
@@ -235,6 +238,10 @@ void BristolNTuple_GenEventInfo::produce(edm::Event& iEvent, const edm::EventSet
 	*SingleNeutrinoEnergy.get() = 0;
 
 	*leptonicBGenJetIndex.get() = -1;
+	*hadronicBGenJetIndex.get() = -1;
+	*hadronicDecayQuarkGenJetIndex.get() = -1;
+	*hadronicDecayQuarkBarGenJetIndex.get() = -1;
+
 
 	//-----------------------------------------------------------------
 	if (!iEvent.isRealData()) {
@@ -406,9 +413,8 @@ void BristolNTuple_GenEventInfo::produce(edm::Event& iEvent, const edm::EventSet
 
 					// Get subset of gen jets that are stored in ntuple
 					vector<reco::GenJet> genJetsInNtuple;
-					for (reco::GenJetCollection::const_iterator it = genJets->begin(); it != genJets->end(); ++it) {
-
-
+					for (reco::GenJetCollection::const_iterator it = genJets->begin(); it != genJets->end(); ++it) 
+					{
 						if (it->pt() < minGenJetPt_ || fabs(it->eta()) > maxGenJetAbsoluteEta_ )
 							continue;
 
@@ -420,7 +426,11 @@ void BristolNTuple_GenEventInfo::produce(edm::Event& iEvent, const edm::EventSet
 					JetPartonMatching matching( partonsToMatch, genJetsInNtuple, 0, true, true, 0.3 );
 
 					// Store indices of matched gen jets
+					*hadronicDecayQuarkGenJetIndex = matching.getMatchForParton(0);
+					*hadronicDecayQuarkBarGenJetIndex = matching.getMatchForParton(1);
 					*leptonicBGenJetIndex = matching.getMatchForParton(2);
+					*hadronicBGenJetIndex = matching.getMatchForParton(3);
+
 				}
 			}
 		}
@@ -437,7 +447,6 @@ void BristolNTuple_GenEventInfo::produce(edm::Event& iEvent, const edm::EventSet
 	iEvent.put(ttbarDecay, prefix_ + "TtbarDecay" + suffix_);
 
 	iEvent.put(leptonicTopPt, prefix_ + "leptonicTopPt" + suffix_);
-	iEvent.put(leptonicBGenJetIndex, prefix_ + "leptonicBGenJetIndex" + suffix_);
 	iEvent.put(leptonicTopPx, prefix_ + "leptonicTopPx" + suffix_);
 	iEvent.put(leptonicTopPy, prefix_ + "leptonicTopPy" + suffix_);
 	iEvent.put(leptonicTopPz, prefix_ + "leptonicTopPz" + suffix_);
@@ -491,5 +500,11 @@ void BristolNTuple_GenEventInfo::produce(edm::Event& iEvent, const edm::EventSet
 	iEvent.put(SingleNeutrinoPy, prefix_ + "SingleNeutrinoPy" + suffix_);
 	iEvent.put(SingleNeutrinoPz, prefix_ + "SingleNeutrinoPz" + suffix_);
 	iEvent.put(SingleNeutrinoEnergy, prefix_ + "SingleNeutrinoEnergy" + suffix_);
+
+	iEvent.put(leptonicBGenJetIndex, prefix_ + "leptonicBGenJetIndex" + suffix_);
+	iEvent.put(hadronicBGenJetIndex, prefix_ + "hadronicBGenJetIndex" + suffix_);
+	iEvent.put(hadronicDecayQuarkBarGenJetIndex, prefix_ + "hadronicDecayQuarkBarGenJetIndex" + suffix_);
+	iEvent.put(hadronicDecayQuarkGenJetIndex, prefix_ + "hadronicDecayQuarkGenJetIndex" + suffix_);
+
 
 }
