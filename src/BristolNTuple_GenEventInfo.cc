@@ -300,12 +300,6 @@ void BristolNTuple_GenEventInfo::produce(edm::Event& iEvent, const edm::EventSet
 		//identify ttbar decay mode
 		if (isTTbarMC_) {
 
-
-
-
-
-
-
 			if (ttbarDecayFlags_.size() != TTbarDecay::NumberOfDecayModes - 1) {
 				edm::LogError("BristolNTuple_GenEventError")
 						<< "Error! Not enough flags given to describe all decay modes." << "Expecting "
@@ -337,70 +331,71 @@ void BristolNTuple_GenEventInfo::produce(edm::Event& iEvent, const edm::EventSet
 
 				if ( ttGenEvt->isSemiLeptonic() ) {
 
-					*leptonicTopPt.get() = ttGenEvt->leptonicDecayTop()->pt();
-					*leptonicTopPx.get() = ttGenEvt->leptonicDecayTop()->px();
-					*leptonicTopPy.get() = ttGenEvt->leptonicDecayTop()->py();
-					*leptonicTopPz.get() = ttGenEvt->leptonicDecayTop()->pz();
-					*leptonicTopEnergy.get() = ttGenEvt->leptonicDecayTop()->energy();
-					*hadronicTopPt.get() = ttGenEvt->hadronicDecayTop()->pt();
-					*hadronicTopPx.get() = ttGenEvt->hadronicDecayTop()->px();
-					*hadronicTopPy.get() = ttGenEvt->hadronicDecayTop()->py();
-					*hadronicTopPz.get() = ttGenEvt->hadronicDecayTop()->pz();
-					*hadronicTopEnergy.get() = ttGenEvt->hadronicDecayTop()->energy();
+					const reco::GenParticle * leptonicTop = ttGenEvt->leptonicDecayTop();
+					*leptonicTopPt.get() = leptonicTop->pt();
+					*leptonicTopPx.get() = leptonicTop->px();
+					*leptonicTopPy.get() = leptonicTop->py();
+					*leptonicTopPz.get() = leptonicTop->pz();
+					*leptonicTopEnergy.get() = leptonicTop->energy();
+					const reco::GenParticle * hadronicTop = ttGenEvt->hadronicDecayTop();
+					*hadronicTopPt.get() = hadronicTop->pt();
+					*hadronicTopPx.get() = hadronicTop->px();
+					*hadronicTopPy.get() = hadronicTop->py();
+					*hadronicTopPz.get() = hadronicTop->pz();
+					*hadronicTopEnergy.get() = hadronicTop->energy();
 
-	
-					*leptonicBPt.get() = ttGenEvt->leptonicDecayB()->pt();
-					*leptonicBPx.get() = ttGenEvt->leptonicDecayB()->px();
-					*leptonicBPy.get() = ttGenEvt->leptonicDecayB()->py();
-					*leptonicBPz.get() = ttGenEvt->leptonicDecayB()->pz();
-					*leptonicBEnergy.get() = ttGenEvt->leptonicDecayB()->energy();
-					*hadronicBPt.get() = ttGenEvt->hadronicDecayB()->pt();
-					*hadronicBPx.get() = ttGenEvt->hadronicDecayB()->px();
-					*hadronicBPy.get() = ttGenEvt->hadronicDecayB()->py();
-					*hadronicBPz.get() = ttGenEvt->hadronicDecayB()->pz();
-					*hadronicBEnergy.get() = ttGenEvt->hadronicDecayB()->energy();
-	
+					const reco::GenParticle * leptonicDecayW = ttGenEvt->leptonicDecayW();
+					*leptonicWPt.get() = leptonicDecayW->pt();
+					*leptonicWPx.get() = leptonicDecayW->px();
+					*leptonicWPy.get() = leptonicDecayW->py();
+					*leptonicWPz.get() = leptonicDecayW->pz();
+					*leptonicWEnergy.get() = leptonicDecayW->energy();
+					const reco::GenParticle * hadronicDecayW = ttGenEvt->hadronicDecayW();
+					*hadronicWPt.get() = hadronicDecayW->pt();
+					*hadronicWPx.get() = hadronicDecayW->px();
+					*hadronicWPy.get() = hadronicDecayW->py();
+					*hadronicWPz.get() = hadronicDecayW->pz();
+					*hadronicWEnergy.get() = hadronicDecayW->energy();
 
-
-
-					*leptonicWPt.get() = ttGenEvt->leptonicDecayW()->pt();
-					*leptonicWPx.get() = ttGenEvt->leptonicDecayW()->px();
-					*leptonicWPy.get() = ttGenEvt->leptonicDecayW()->py();
-					*leptonicWPz.get() = ttGenEvt->leptonicDecayW()->pz();
-					*leptonicWEnergy.get() = ttGenEvt->leptonicDecayW()->energy();
-					*hadronicWPt.get() = ttGenEvt->hadronicDecayW()->pt();
-					*hadronicWPx.get() = ttGenEvt->hadronicDecayW()->px();
-					*hadronicWPy.get() = ttGenEvt->hadronicDecayW()->py();
-					*hadronicWPz.get() = ttGenEvt->hadronicDecayW()->pz();
-					*hadronicWEnergy.get() = ttGenEvt->hadronicDecayW()->energy();
-				
-					*hadronicdecayquarkPt.get() = ttGenEvt->hadronicDecayQuark()->pt();
-					*hadronicdecayquarkPx.get() = ttGenEvt->hadronicDecayQuark()->px();
-					*hadronicdecayquarkPy.get() = ttGenEvt->hadronicDecayQuark()->py();
-					*hadronicdecayquarkPz.get() = ttGenEvt->hadronicDecayQuark()->pz();
-					*hadronicdecayquarkEnergy.get() = ttGenEvt->hadronicDecayQuark()->energy();
-					*hadronicdecayquarkbarPt.get() = ttGenEvt->hadronicDecayQuarkBar()->pt();
-					*hadronicdecayquarkbarPx.get() = ttGenEvt->hadronicDecayQuarkBar()->px();
-					*hadronicdecayquarkbarPy.get() = ttGenEvt->hadronicDecayQuarkBar()->py();
-					*hadronicdecayquarkbarPz.get() = ttGenEvt->hadronicDecayQuarkBar()->pz();
-					*hadronicdecayquarkbarEnergy.get() = ttGenEvt->hadronicDecayQuarkBar()->energy();
-
-					*SingleLeptonPt.get() = ttGenEvt->singleLepton()->pt();
-					*SingleLeptonPx.get() = ttGenEvt->singleLepton()->px();
-					*SingleLeptonPy.get() = ttGenEvt->singleLepton()->py();
-					*SingleLeptonPx.get() = ttGenEvt->singleLepton()->pz();
-					*SingleLeptonEnergy.get() = ttGenEvt->singleLepton()->energy();
-					*SingleNeutrinoPt.get() = ttGenEvt->singleNeutrino()->pt();
-					*SingleNeutrinoPx.get() = ttGenEvt->singleNeutrino()->px();
-					*SingleNeutrinoPy.get() = ttGenEvt->singleNeutrino()->py();
-					*SingleNeutrinoPx.get() = ttGenEvt->singleNeutrino()->pz();
-					*SingleNeutrinoEnergy.get() = ttGenEvt->singleNeutrino()->energy();
+					const reco::GenParticle * SingleLepton = ttGenEvt->singleLepton();
+					*SingleLeptonPt.get() = SingleLepton->pt();
+					*SingleLeptonPx.get() = SingleLepton->px();
+					*SingleLeptonPy.get() = SingleLepton->py();
+					*SingleLeptonPx.get() = SingleLepton->pz();
+					*SingleLeptonEnergy.get() = SingleLepton->energy();
+					const reco::GenParticle * SingleNeutrino = ttGenEvt->singleNeutrino();
+					*SingleNeutrinoPt.get() = SingleNeutrino->pt();
+					*SingleNeutrinoPx.get() = SingleNeutrino->px();
+					*SingleNeutrinoPy.get() = SingleNeutrino->py();
+					*SingleNeutrinoPx.get() = SingleNeutrino->pz();
+					*SingleNeutrinoEnergy.get() = SingleNeutrino->energy();
 
 					// Get partons that should result in a gen jet
-					const reco::GenParticle * hadronicDecayQuark = ttGenEvt->hadronicDecayQuark();
-					const reco::GenParticle * hadronicDecayQuarkBar = ttGenEvt->hadronicDecayQuarkBar();
 					const reco::GenParticle * leptonicDecayB = ttGenEvt->leptonicDecayB();
+					*leptonicBPt.get() = leptonicDecayB->pt();
+					*leptonicBPx.get() = leptonicDecayB->px();
+					*leptonicBPy.get() = leptonicDecayB->py();
+					*leptonicBPz.get() = leptonicDecayB->pz();
+					*leptonicBEnergy.get() = leptonicDecayB->energy();
 					const reco::GenParticle * hadronicDecayB = ttGenEvt->hadronicDecayB();
+					*hadronicBPt.get() = hadronicDecayB->pt();
+					*hadronicBPx.get() = hadronicDecayB->px();
+					*hadronicBPy.get() = hadronicDecayB->py();
+					*hadronicBPz.get() = hadronicDecayB->pz();
+					*hadronicBEnergy.get() = ttGenEvt->hadronicDecayB()->energy();
+	
+					const reco::GenParticle * hadronicDecayQuark = ttGenEvt->hadronicDecayQuark();
+					*hadronicdecayquarkPt.get() = hadronicDecayQuark->pt();
+					*hadronicdecayquarkPx.get() = hadronicDecayQuark->px();
+					*hadronicdecayquarkPy.get() = hadronicDecayQuark->py();
+					*hadronicdecayquarkPz.get() = hadronicDecayQuark->pz();
+					*hadronicdecayquarkEnergy.get() = hadronicDecayQuark->energy();
+					const reco::GenParticle * hadronicDecayQuarkBar = ttGenEvt->hadronicDecayQuarkBar();
+					*hadronicdecayquarkbarPt.get() = hadronicDecayQuarkBar->pt();
+					*hadronicdecayquarkbarPx.get() = hadronicDecayQuarkBar->px();
+					*hadronicdecayquarkbarPy.get() = hadronicDecayQuarkBar->py();
+					*hadronicdecayquarkbarPz.get() = hadronicDecayQuarkBar->pz();
+					*hadronicdecayquarkbarEnergy.get() = hadronicDecayQuarkBar->energy();
 
 					// Put these in a vector to pass in to JetPartonMatching
 					const vector< const reco::Candidate* > partonsToMatch = { hadronicDecayQuark, hadronicDecayQuarkBar, leptonicDecayB, hadronicDecayB };
