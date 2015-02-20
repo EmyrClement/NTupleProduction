@@ -32,6 +32,11 @@ setupTTGenEvent( process, cms )
 # from BristolAnalysis.NTupleTools.hitFit_cff import *
 # setupHitFit( process, cms )
 
+# Extra gen jet collection
+# No nu
+from BristolAnalysis.NTupleTools.genJetNoNu_cff import *
+setupGenJetNoNu(process, cms)
+
 # Load the selection filters and the selection analyzers
 process.load( 'BristolAnalysis.NTupleTools.muonSelection_cff')
 process.load( 'BristolAnalysis.NTupleTools.qcdMuonSelection_cff')
@@ -59,6 +64,7 @@ process.makingNTuples = cms.Path(
   process.qcdElectronSelectionAnalyzerSequence *
   process.selectionCriteriaAnalyzer *
   process.ttGenEvent *
+  process.genJetsNoNuSequence *
   process.nTuples *
   process.nTupleTree
   )
