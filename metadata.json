@@ -23,11 +23,6 @@
 			"destination": "TopQuarkAnalysis/TopSkimming",
 			"provider": "git"
 		},{
-			"name": "PseudoTop",
-			"source": "jhgoh:PseudoTop76",
-			"destination": "",
-			"provider": "git-cms-merge-topic"
-		},{
 			"name": "htcondenser",
 			"source": "git+https://github.com/kreczko/htcondenser.git@setup",
 			"destination": "",
@@ -54,6 +49,11 @@
 			"source": "git+https://github.com/BristolTopGroup/DailyPythonScripts.git",
 			"destination": "",
 			"provider": "pip"
+		},{
+			"name": "egammaID",
+			"source": "ikrav:egm_id_80X_v1",
+			"destination": "",
+			"provider": "git-cms-merge-topic"
 		}
 	]
 }
