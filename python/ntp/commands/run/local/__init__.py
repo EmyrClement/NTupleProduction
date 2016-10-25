@@ -39,7 +39,7 @@ from crab.util import find_input_files
 LOG = logging.getLogger(__name__)
 PSET = os.path.join(TMPDIR, 'pset.py')
 OUTPUT_FILE = os.path.join(RESULTDIR, '{ds}_ntuple.root')
-BTAG_CALIB_FILE = os.path.join(CMSSW_SRC, 'BristolAnalysis', 'NTupleTools', 'data','BTagSF','CSVv2.csv')
+BTAG_CALIB_FILE = os.path.join(CMSSW_SRC, 'BristolAnalysis', 'NTupleTools', 'data','BTagSF','CSVv2_ichep.csv')
 BASE = """
 import FWCore.ParameterSet.Config as cms
 from run.miniAODToNTuple_cfg import process
