@@ -125,10 +125,12 @@ class Command(C):
             Converts given path(s) to input files.
         """
         import glob
+        input_files = None
         if type(path) is list:
+            input_files = []
             for p in path:
                 if '*' in p:
-                    input_files = glob.glob(p)
+                    input_files.extend(glob.glob(p))
                 else:  # neither wildcard nor comma separated list
                     input_files = path
         else:
