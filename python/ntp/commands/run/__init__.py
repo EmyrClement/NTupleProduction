@@ -132,7 +132,7 @@ class Command(C):
                 if '*' in p:
                     input_files.extend(glob.glob(p))
                 else:  # neither wildcard nor comma separated list
-                    input_files = path
+                    input_files.append(p)
         else:
             if ',' in path:
                 input_files = path.split(',')
