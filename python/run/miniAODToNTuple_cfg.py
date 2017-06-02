@@ -1,7 +1,7 @@
 from __future__ import print_function
 import FWCore.ParameterSet.Config as cms
 from FWCore.ParameterSet.VarParsing import VarParsing
-from BristolAnalysis.NTupleTools.options import CMSSW_MAJOR_VERSION, registerOptions, is2015, is2016
+from BristolAnalysis.NTupleTools.options import CMSSW_MAJOR_VERSION, registerOptions
 import sys
 
 # register options
@@ -108,12 +108,9 @@ process.load('BristolAnalysis.NTupleTools.SelectionCriteriaAnalyzer_cfi')
 
 if options.tagAndProbe:
     process.topPairEPlusJetsSelection.tagAndProbeStudies = cms.bool(True)
-    process.topPairEPlusJetsSelectionTagging.tagAndProbeStudies = cms.bool(
-        True)
-    process.topPairEPlusJetsSelection.jetSelectionInTaggingMode = cms.bool(
-        True)
-    process.topPairEPlusJetsSelectionTagging.jetSelectionInTaggingMode = cms.bool(
-        True)
+    process.topPairEPlusJetsSelectionTagging.tagAndProbeStudies = cms.bool(True)
+    process.topPairEPlusJetsSelection.jetSelectionInTaggingMode = cms.bool(True)
+    process.topPairEPlusJetsSelectionTagging.jetSelectionInTaggingMode = cms.bool(True)
 
 # Maximum Number of Events
 process.maxEvents = cms.untracked.PSet(input=cms.untracked.int32(-1))
@@ -128,12 +125,14 @@ process.load('BristolAnalysis.NTupleTools.indices_cff')
 
 # adds process.eventUserDataSequence
 process.load('BristolAnalysis.NTupleTools.userdata.EventUserData_cff')
+process.load('BristolAnalysis.NTupleTools.nJettiness_cff')
 
 if isTTbarMC:
     process.makingNTuples = cms.Path(
         # process.metFilters *
         process.badMuonTagger *
         process.processedElectrons *
+        process.addNJettiness *
         # process.reapplyJEC *
         process.electronSelectionAnalyzerSequence *
         process.muonSelectionAnalyzerSequence *
@@ -153,6 +152,8 @@ else:
         # process.metFilters *
         process.badMuonTagger *
         process.processedElectrons *
+        process.addNJettiness *
+
         # process.reapplyJEC *
         process.electronSelectionAnalyzerSequence *
         process.muonSelectionAnalyzerSequence *
